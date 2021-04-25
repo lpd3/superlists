@@ -103,3 +103,33 @@ e.	Re-run the Functional Test. If it fails, go back to step b.
         influence the next test session, or the running of the probject. Therefore, tests
         should clean up after themselves. In our pet project, the unit tests automatically
         self-clean. The functional tests do not.
+
+25.     Avoid "voodoo sleeps" in testing. These are explicit waits. Instead, create routines
+        based on loops that keep checking for a desired item over a set period of time.
+
+26.     Do not rely on Selenium implicit waits. They are unreliable.
+
+27.     TDD is part of the agile design movement. It is largely a reaction against the standard
+        design paradigm Big Design Up Front: BDUF. This alternative paradigm is to first
+        have a lengthy requirements gathering meeting. Then, the design of the project
+        is thoroughly planned on paper. It is only after these initial stages that the
+        project code gets written. TDD is different. We start with a Functional Test
+        as a model of the User Experience. Then we write code incrementally, with the
+        goal of getting a viable application up and running immediately. We build our
+        project based on its confrontation with real-world usage and testing, rather
+        than envisioning the entire project up front.
+
+28.     YAGNI: You Ain't Gonna Need It. Planning a project can be fun. We can get
+        lost in all the cool things we want to add to the project. We like to create
+        and write code, so we end up making our project elephantine and brittle, with
+        the end result that we include many features that the user never touches.
+        Always keep this acronym in mind as you think about the direction and design
+        of your projects.
+
+29.     REST: REpresentational State Transfer. This is an approach to web design
+        with the idea that the user experience should be mirrored in the structure
+        of the site. For example, the URL structure should match the data structre of
+        the project.
+
+30.     In our functional tests, we have outlined a user story in comments. We can
+        also make metacomments to ourselves using double hash marks ##.

@@ -461,4 +461,71 @@ B.      To isolate our Functional tests we could write clean-up code in the file
         tests file workable as a runable file.
         
 
-C.      The new way to run our functional tests is like this: manage.py test functional_tests
+C.      The new way to run our functional tests is like this: manage.py test functional_tests.
+        This fails at the bookmark, as we expected. More importantly, items are not left
+        around from previous test runs.
+
+D.      COMMIT 13 "Make functional_tests an app, use LiveServerTestCase."
+
+E.      Running manage.py test will now run both unit and functional tests. Doing so produces
+        the same result: a single fail at the functional test bookmark. 
+
+F.      To run just the unit tests, we now use manage.py test lists. Doing so is successful, as
+        expected.
+
+G.      2: Removing time.sleep. Introducing these time.sleep lines is problemmatic. If we don't
+        have some wait time, we will face situations where the browser or computer is not able
+        to keep up with the test. Then we can have false positives: we get errors that are
+        not related to our project. But the problem with these explicit waits is that they
+        are almost always too long. One solution is to use implicit waits, a function supplied
+        by Selenium. But these are even more troublesome. Most professionals advise us not to
+        use them.
+
+H.      Our solution is to change our check_for_row_in_list_table to wait_for_row_in_list_table.
+        This uses a loop which continuously checks for the items we are looking for. If the item
+        is found, we break out of the loop and go on. Otherwise, we keep looping until a certain
+        amount of time has passed and throw the error. We rename our method calls, and remove
+        the phantom sleeps.
+
+I.      The Functional test fails at the bookmark, as expected.
+
+J.      Next, we intentionally break the functional test to make sure it catches errors.
+        First, we have it look for 'foo' in the database rows.
+
+K.      The Functional test fails because the database does not contain 'foo'. This is expected.
+
+L.      We fix what we broke and break something else. Assigning a value to table, we
+        have it find the element by id: 'id_nothing'.
+
+M.      The Functional test fails because there is no element with label 'id_nothing' on the webpage.
+        This was also expected.
+
+N.      We fix what we broke.
+
+O.      The functional test fails at the bookmark, as expected. 
+
+CHAPTER 7: WORKING INCREMENTALLY
+
+A.      We are left with one last to-do item: we need to be able to save multiple
+        lists. To begin this, we need to flesh out our user story in the functional
+        tests a little more, by adding a second user.
+
+B.      We are going to make a move toward REST: REpresentational State Transfer. Each user
+        will receive a different webpage.
+
+C.      Here is our new to-do list:
+        1.   Adjust model so that items are associated with different lists.
+        2.   Add unique URLs for each list.
+        3.   Add a URL for creating a new list via POST
+        4.   Add URLs for adding a new item to an existing list via POST.
+
+        We will achieve these goals by incrementally chaning the project we have already
+        developed.
+
+D.      We begin by altering our functional tests. We change the name of one test, and add
+        a new test method test_multiple_users_can_start_lists_at_different_urls. We employ
+        assertRegex to assert that the new to-list begins with /lists/ and contains additional text
+        after this.
+
+E.      The Functional test fails because the multiple user test cannot find the regex pattern
+        /lists/.+ in the URL. This is expected. All previous tests continued to pass, as before.
