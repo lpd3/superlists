@@ -288,5 +288,14 @@ X.      We pause because, in addition to the fail, we have a "bad code smell." T
         repetitive. We need to refactor to remove duplication before we fix the problem. Before doing a
         refactor, we always make a commit.
 
+Y.      COMMIT 9: "To-Do list now can handle user input."
+
+Z.      We add a hepler method to the functional test (not beginning with "test"): check_for_row_in_list_table.
+        Then we remove the two sections of code that did this same check and replace them with calls to
+        the helper method.
+
+AA.     The functional test fails, as expected, and in the same way. This is good news. It means our
+        refactoring did not change the way the site or the tests work.
+
 
         
