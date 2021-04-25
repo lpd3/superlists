@@ -1,0 +1,181 @@
+﻿PREREQUISITES AND ASSUMPTIONS
+
+Assumptions:	
+1.	You know how to write code in Python 3
+2.	You have a basic knowledge of HTML
+3.	You are willing to learn some Django
+4.	You are willing to learn some JavaScript
+
+Prerequisites:
+1.	Firefox web browser
+2.	Git version control system.
+3.	A virtualenv with Python 3, Django 1.11 and Selenium 3 in it.
+4.	Geckodriver
+
+PART I: THE BASICS OF TDD AND DJANGO
+
+CHAPTER 1: GETTING DJANGO SET UP USING A FUNCTIONAL TEST
+
+A.	Functional test written which checks to make sure “Django” is in the web-page title.
+	
+	Running this test fails. We don’t yet have a server up and running.
+	
+B.	New project “superlists” created using django-admin.py
+C.	Server started using manage.py
+
+D.	Functional test run again.
+
+	Running test passes.
+
+E. 	Git repository started.
+	Files that we don’t want tracked are added to .gitignore
+F.	COMMIT 1: “First Commit: First FT and Basic Django config.
+
+CHAPTER 2: EXTENDING OUR FUNCTIONAL TEST USING THE unittest  MODULE
+
+Project revealed: A To-Do List
+
+A.	Functional Test redesigned: User story created. Test now checks that the text “To-Do” appears 
+	in the browser title.
+
+B.	Test run and fails: The Assertion fails. This is cryptic. Furthermore, the process annoyingly 
+	leaves an open browser window hanging around.
+
+C.	Functional Test rewritten using the python module unittest. Groups of tests are classes.
+	Individual tests are methods within the classes that begin with the word “test”. The name
+	of each test should be highly descriptive. Each class may have an unlimited number of tests.
+	The classes may include other methods besides tests. Two useful ones are
+	setUp
+
+	and
+
+	tearDown.
+
+	These designate the actions that the test class will take at the beginning and at the end, 
+	regardless of whether or not there is an error.
+
+	Some useful unittest functions:
+
+	assertIn(object, location)
+	A special assertion that is much more descriptive that the default assert.
+
+	fail(message)
+	A function that always fails. Useful as a testing “bookmark”.
+
+D.	Functional test run again. Fails the assertIn test, giving a message that “To-Do” does not appear
+	in the browser title.
+
+E.	COMMIT 2: “First FT specced out in comments, and now uses unittest.”
+
+CHAPTER 3: TESTING A SIMPLE HOME PAGE WITH UNIT TESTS
+
+A.	First app created for our project, called “lists.” Created with manage.py startapp
+
+B.      First (silly) unittest written.
+
+C.      COMMIT 3: "Add app for lists, with deliberately failing unit test."
+
+D.      Rewrote the unittests. class HomePageTest. def test_root_url_resolved_to_home_page_view
+
+E.      Test failed because the home_page import from lists.views has not been written.
+
+F.      home_page declared in views as equal to None
+
+G.      Test failed because there is no URL associated with our view.
+
+H.      Went to superlists/urls.py and got rid of admin import,
+        replaced it with lists.views import and altered the first urlpattern to send to the homepage on empty text.
+
+I.      Test failed because home_page as defined is not callable, or a list/tuple.
+
+J.      In views, redefined home_page as a function that does nothing.
+
+K.      Unittest passed.
+
+L.      COMMIT 4: "First unit test and url mapping, dummy view."
+
+M.      /lists/tests: added import to django.http.HttpRequest. Added a new test method to the class,
+        test_home_page_returns_correct_html. Wrote code to make home_page the response based on the request,
+        to decode the bytes into utf8 and call this html, and assertions that this begins with the html tag,
+        contains the title To-Do lists and ends with the close html tag.
+
+N.      Unittest fails because it is sending an argument to home_page, which currently has no parameters.
+
+O.      Changed home_page view to take a single parameter called "request".
+
+P.      Unittest fails because the test is expecting the return value from home_page to have an attribute called
+        "content." But the home_page view returns None.
+
+Q.      in views, added an import to django.http.HttpResponse. Rewrote the home_page function so that it returns
+        HttpResponse.
+
+R.      Unit test fails because the decoded response does not begin with the html tag.
+
+S.      Added html tag to views.
+
+T.      Unit test fails because it does not contain the title.
+
+U.      Added title to views.
+
+V.      Unit test fails because it doesn't end with html close tag.
+
+W.      html close tag added to views.
+
+X.      Unit test passes.
+
+Y.      Functional test fails at our bookmark failure only.
+
+Z.      COMMIT 5: "Basic view now returns minimal HTML"
+
+CHAPTER 4. WHAT ARE WE DOING WITH ALL THESE TESTS? (AND REFACTORING)
+
+A.      Ran the Functional Test and got the same error at our bookmark.
+
+B.      Fleshed out the Functional Test much more. Now imports Keys from Selenium.
+        Locates the header text and tests to see if
+        To-Do is in the text. Tests to make sure the inputbox contains the text 'Enter a to-do item'.
+        Sends the key 'Buy peacock feathers'. Enters them. Sleeps for 1 second. Finds the rows of the
+        table and verifies that the text '1: Buy peacock featers' appears somewhere in the table.
+        Moved the failure bookmark here.
+        We used a few new Selenium functions: find_element_by_tag_name, find_element_by_id, get_attribute
+        send_keys, Keys.ENTER
+
+C.      Functional Test failed because element 'h1' is not on the page.
+
+D.      COMMIT 6: "Functional test now checks we can add a to-do item"
+
+E.      Since the unit testing we currently have tests constants (not really what unit tests are for)
+        we are going to relegate the content of views to files written in HTML. This is refactoring.
+        We are attempting to improve the code while maintaining the same functionality. This requires
+        tests. The first thing we do is re-run our current unit tests. These passed, as expected.
+
+F.      Created the directory lists/templates. Created a HTML file in lists/templates called home.html. It contains exactly the same
+        content that the previous "hard-wired" view does.
+
+G.      Changed the views file. We got rid of the hard-coded stuff. We got rid of the
+        htmlrequest import. Now the home_page function returns the render(request, 'home.html')
+
+H.      Unit test fails because home.html is not recognized as a template.
+
+I.      We realize that having an html file in the templates file is not enough to use it in rendering a view.
+        We need to register the lists app in the superlists/settings file. This is put in the INSTALLED_APPS.
+
+J.      Unit test fails because the page does not end in '</html>/'. This is because converting the view to
+        a template resulted in an inavertant addition of a newline.
+
+K.      Since it does not matter if there is whitespace at the end of the page, we change the test to
+        check on the presence of the stripped html close tag.
+
+L.      Unit test passes.
+
+M.      Change the unit test so that it no longer checks for specific test. Instead, it checks to make
+        sure the correct template is utilized.
+
+N.      Unit Test passes.
+
+O.      Since test didn't fail, we create a deliberately failing condition to check it: we give it the wrong
+        name for the template. And it fails as expected. We replace the correct template.
+
+P.      Removed the test_root_url_resolves test. Removed all assertions except the assertTemplateUsed.
+        django's client.get takes care of everything else.
+

@@ -1,0 +1,43 @@
+﻿PRINCIPLES OF TEST DRIVEN DEVELOPMENT (TDD)
+
+1.	Obey the testing goat!
+
+The basic procedure is:
+a.	Write a test
+b.	Run it to assure that it fails.
+c.	Write the simplest code that makes the test pass.
+
+2.	Design your functional test by creating a “user story”: a script of the user’s
+	experience using the application.
+
+3.	Expected failure: A test that fails in a way that we predict ahead of time. In TDD,
+	this is a much-encountered, and hoped-for situation.
+
+4.	Unit test: A “behind the scenes test”. This is a test of bit of code functionality.
+	It is sharply differentiated from the “functional test”, a test of the application as
+	a whole from the user perspective.
+
+5.	TDD steps, 2nd version
+a.	Write a Functional Test based on a user narrative, and make sure it fails.
+b.	Consider how to make the Functional Test pass in the simplest way.
+c.	Write a unit test to test the basic function of the proposed code change. Get it
+	to fail.
+d.	Write code until you can get the unit test to pass.
+e.	Re-run the Functional Test. If it fails, go back to step b.
+	If not, flesh out the Functional Test a little more, get it to fail, and go back to b.
+
+6.      When making a git commit, always review it first.
+
+7.      It may seem ludicrous to test miniscule changes in code. However, it is difficulty to
+        determine when a project is becoming complex. Testing all along allows the project
+        to be rigrously tested when it becomes complex.
+
+8.      A rule about functional tests: DON'T TEST CONSTANTS.
+
+9.      Unit tests are really about testing logic, flow control and configuration.
+
+10.     Refactoring: Improving the code WITHOUT CHANGING ITS FUNCTIONALITY
+
+11.     You cannot refactor without tests.
+
+12.     When refactoring, work on either the code or the tests, but not both at once.
