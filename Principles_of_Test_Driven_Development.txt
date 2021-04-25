@@ -80,3 +80,26 @@ e.	Re-run the Functional Test. If it fails, go back to step b.
         process of TDD, by using incremental steps, often requires us to use nearly identical code in
         more than one place. We tolerate this duplication only once (allowing two pieces of code to be nearly
         identical. Once we get to a third temptation to repeat the code, we stop and refactor.
+
+19.     For now, we deal with Functional Tests and Unit Tests. Our test of database functioning is accomplished
+        through the Unit Tests. However, in reality, tests which assess the behavior of objects outside the
+        code, such as databases, are properly called Integrated Tests. We will ignore this distinction for now
+        and come back to it later.
+
+20.     Each test method in the unit tests should test only one thing.
+
+21.     A helpful, but not mandatory, way to organize a unit test method is as follows:
+        the set-up section (followed by a blank line)
+        a line in the middle that calls what is being tested (followed by a blank line)
+        the test: the assertion or assertions made about the results of calling the code.
+
+22.     Regression: when new code breaks some aspect of the application which used to work.
+
+23.     Unexpected failure: When a test fails in a way we weren't expecting. This either means
+        that we've made a mistake in our tests, or that the tests have helped us to find a
+        regression, and we need to fix something in our code.
+
+24.     Test isolation. We need to make sure that our tests leave behind nothing that will
+        influence the next test session, or the running of the probject. Therefore, tests
+        should clean up after themselves. In our pet project, the unit tests automatically
+        self-clean. The functional tests do not.

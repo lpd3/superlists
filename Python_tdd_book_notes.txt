@@ -297,5 +297,168 @@ Z.      We add a hepler method to the functional test (not beginning with "test"
 AA.     The functional test fails, as expected, and in the same way. This is good news. It means our
         refactoring did not change the way the site or the tests work.
 
+AB.     COMMIT 10: Functional test refactoring: Checking for text within rows is now accomplished by a helper function.
 
+AC.     To get the site to retain items, we must put them in a database. Working with databases in object-oriented
+        languages is usually accomplished through a ORM: Object-Relational Manager.
+        Tables are classes. Columns are attributes. Rows are instances of the class. Django has a very good ORM,
+        and we will use it. We alter tests.py. First we add an import: from lists.models import Item. Then we write
+        a new class: ItemModelTest. In this new class, we add a new test method: test_saving_and_retrieving_items.
+
+        New Django functions: .save() saves an item with its attributes to a database.
+                              .objects() allows us to query the database.
+                              .all() is the simplest query: it retrieves all items for the table.
+                              The items are returned in a list-like object called a QuerySet
+                              .count() returns the count of entries in the QuerySet
+
+AD.    Unit test fails because it cannot find the import lists.models.Item.
+
+AE.    We create a class in models called Item. It does nothing.
+
+AF.    Unit test fails because Item has no attribute "save".
+
+AG.    We change Item so that it inherits from Django's Model class.
+
+AH.    Unit test fails because it can't find a table called "lists_item". Although we've defined
+       a table in our template, we have no actual table.
+
+AI.    We rely on a separate Django system
+       called "migrations" which moves our information over to an actual table. We need
+       to make migrations. We do this the first time with running manage.py makemigrations
+
+AJ.    Unit test fails because Item has no attribute "text".
+
+AK.    The models.Models object maps tables to a database. It automatically generates an id
+       attribute for each item, but must be instructed how to deal with the information we
+       provide. We change our Item class and add text = models.TextField(). Django has
+       many other field types.
+
+AL.    Unit test fails because it does not recognize the "lists_item.text" as a column name.
+
+AM.    Since we added a column, we need to do another migration. We try the same method we used before.
+
+AN.    This attempt fails. We need to either give a universal default, or set one up in models.py.
+
+AO.    We alter the definition of "text" in the Item class of models.py so that it carries the
+       argument "default=''", the default is the empty string.
+
+AP.    We attempt to run makemigrations again and it works.
+
+AQ.    Unit tests pass.
+
+AR.    We add "lists" to our git.
+
+AS.    COMMIT 11: "Model for list Items and associated migration"
+
+AT.    We expand the unit tests. Now test_can_save_a_POST_request checks to see if the item was added to
+       the database, and just rendered as a RESPONSE. While we're at it, we notice that this test is
+       getting long. It is issuing a "code smell." We make a to-do list of our own. And the sole
+       item on the list is POST request test too long?
+
+AU.    Unit test fails because there are no items in the database.
+
+AV.    We adjust our view. We import lists.models. We redo the home_page view to accept and save a POST request
+       wrapped in an Item. Our naive solution saves an empty item to the database every time we request the
+       home page. We add this problem to our to-do list.
+
+AW.    Unit tests passed.
+
+AX.    We refactor a little in the views.
+
+AY.    Now we have a to-do list with four items.
+       1.  Don't save blank lines for every request.
+       2.  Code smell: POST test is too long?
+       3.  Display multiple items in the table.
+       4.  Support more than one list!
+
+AZ.    Item no. 1: Don't save blank lines for every request. We create a new test method in our HomePageTest
+       to make sure simple redirects no not POST anything to the table.
+
+BA.    Unit test fails as expected because there was an empty entry posted on simple redirect.
+
+BB.    We tweek the views to fix this problem.
+
+BC.    Unit test passes.
+
+BD.    We need to refactor. The new_item_text = '' is lame. And, following the dictum of "always
+       redirect after a POST", we alter our unit tests again. We assert that the response status
+       code = 302 and we assert that the location of the response is home.
+
+BE.    Unit test fails because status code is 200. 302 is the status code for redirect. 200
+       is the status code for "user has requested documents and they were successfully delivered."
+
+BF.    We tidy up our view. We add an import django.shortcuts.redirect. Then we simply return
+       a request of home.html if this is not a post.
+
+BG.    Unit test passes.
+
+BH.    2. Code smell: POST test too long?
+       Now, we should test only one thing at a time. In other words, each unit test method should
+       contain only one assertion. So we refactor the unit tests to obey this dictum.
+
+BI.    Unit test passes, as expected. Now we have five unit test methods instead of four, but
+       these are testing the same things as before.
+
+BJ.    3. Display multiple items in the table. We create a new unit test method
+       test_displays_all_list_items
+
+BK.    Unit test fails as expected. The first test item does not appear in the response content.
+
+BL.    We alter the home.html template to allow the table to be iterated through. Then we change our
+       home page view to pass the items to the template.
+
+BM.    Unit test passes.
+
+BN.    Functional Test fails for a cryptic reason. We decide to try a new debugging technique: we
+       open up the browser at http://local-host:8000 and see what is going on. It turns out we
+       didn't set up the database properly. Our unit tests worked because Django's TestCase
+       creates a temporary database in which to store data. But the real one wasn't being
+       created or utilized. Django has everything it needs to create the database. This is
+       because 1. The database is indicated in settings (it is the default sqlite3 file
+       which is generated automatically when we make an app) 2. We performed the
+       manage.py migrations function. However, Django needs a direct order to go
+       ahead and set up this database. The command is manage.py migrate. We refresh the
+       webpage and see that the error page is gone.
+
+BO.    The functional test fails because it is numbering every item with 1, as we
+       hardcoded in a little while ago.
+
+BP.    We add another Django feature forloop.counter, which should give us the numbering we desire.
+
+BQ.    The functional test fails at the bookmark. All previous tests passed. However, there is
+       a disturbing new development. Every time we run the test, the same two items get added
+       anew to the database. So the database keeps getting bigger everytime we run the
+       functional tests. We erase the data base, do another migrate to start the process over.
+       And now it's time for another Commit.
+
+BR.    COMMIT 12: "Redirect after POST, and show all items in template."
+
+BS.    This is the current state of our to-do list:
+       1. Clean up after functional test runs.
+       2. Support more than one list!
+
+CHAPTER 6: IMPROVING FUNCTIONAL TESTS: INSURING ISOLATION AND REMOVING VOODOO SLEEPS
+
+A.      Before we improve the project, we have two orders of business. The first is the
+        first item of the our to-do list: clean up after functional test runs.
+        The other is a new concern. We have time.sleep() functions peppering our
+        Functional tests. This is not ideal. So our to-do list is
+        1. Clean up after functional tests.
+        2. Remove time.sleep
+        3. Support more than one list!
+
+B.      To isolate our Functional tests we could write clean-up code in the file.
+        However, we can also use a feature of Django: LiveServerTestCase.
+        In preparation, we create a new folder called functional_tests. We put
+        an empty __init__.py file in the folder. Then we move the functional_tests file
+        to functional_tests/tests. The folder functional_tests will be a new app in
+        our project. We do the moving with git mv. This way, git can keep track of
+        the location of the file. Next, we alter functional_tests/tests to make use
+        of LiveServerTestCase. To do so, we add an import django.test.LiveServerTestCase.
+        We remove the import of unittest. We make the NewVisitorTest inherit from LiveServerTestCase.
+        We change the browser page call in test_can_start_a_list_and_retrieve_it_later to
+        self.live_server_url. And we remove the code at the bottom that makes the
+        tests file workable as a runable file.
         
+
+C.      The new way to run our functional tests is like this: manage.py test functional_tests
