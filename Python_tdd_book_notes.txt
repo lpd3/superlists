@@ -205,3 +205,88 @@ Z.      Functional tests fail because "1: Buy peacock feathers" is not found in 
 
 AA.     Functional tests fail again for the same reason. But now we have a more understandable error
         message.
+
+AB.     COMMIT 8: "Front page HTML now generated from a template."
+
+CHAPTER 5. SAVING USER INPUT: TESTING THE DATABASE
+
+A.      We need to be able to save user input. Our first attempts at this will involve simple
+        POST requests. We need to update our home.html template. The <input> element is given a name
+        and it is wrapped in a <form> tag with method = "POST"
+
+B.      Functional test fails for an unexpected reason. Error message is cryptic. We decide to extend
+        the already present "sleep" function in the functional test to allow us a good look at the webpage.
+
+C.      It turns out, that the Functional test fails because Django is expecting a CSRF token. A CSRF =
+        Cross-Site Forgery Request = a type of attack that relies on hijacking a user's POST requests
+        to access aspects of a site that the hacker would not normally have access to. Django's solution
+        to this problem is to generate, and check for the presence of, a random key in the document.
+        The hacker will not have this key and will not be able to hijack the post request. To make
+        get Django to generate this tag, we will insert {% csrf_token %} into our form on the template.
+
+D.      Functional test fails because the test item did not make it into the table. The problem is that
+        the views file is not set up to deal with a POST request. It simply directs everything to the
+        home page, which does us no good.
+
+E.      We replace the original sleep duration in the functional test. Then we add a new test in the unit
+        tests. test_can_save_a_POST_request.
+
+F.      The Unit test fails as expected. We need to get the views to recognize a POST request.
+
+G.      The simplest way to get the unit test to pass is to rewrite the views to return a POST request
+        when an item is sent to the list.
+
+H.      The Unit test passes. However, we are not accomplishing what we wish to accomplish. The
+        item is not being added to list database.
+
+I.      We change our home template. We add the Python variable new_item_text to the a row of the table,
+        and enclose this in double braces, which will render the variable as a string. Then we adjust the
+        unit test to test whether or not the home template is still being used to render the POST request.
+
+J.      The unit test fails, as expected.
+
+K.      We simplify our home page view to allow for a post request for a new item.
+
+L.      The unit test fails for an unexpected reason: in redesigning our views, we accidentally got rid
+        of the POST request.
+
+M.      We alter the view so that it uses request.POST.get. It takes the variable name, and we also
+        give it a default value, the empty string.
+
+
+N.      The unit test passes.
+
+O.      The functional tests fails. The new to-do item is still not appearing in the table. This is
+        an unexpected error.
+
+P.      We improve the error message in the assertion function that shows us the contents of the
+        table. We used the f string syntax, introduced in Python 3.6
+
+Q.      Functional test fails again, as expected. This time we see that the item made it into the table,
+        but that it contains no "1", which we wanted the table entry to contain.
+
+R.      We realize that our assertion is overly complex. We were trying to be too clever by using
+        the Python "all" built-in function. We change the assertion to make it much simpler, and
+        function better.
+
+S.      The Functional test fails as expected. This time, we get a clear error message as a side-effect
+        of our simpler assertion.
+
+T.      The fastest way to fix this error is simply to write a 1 in the template. We do this.
+
+U.      The Functional test fails at the bookmark. All earlier tests pass. But of course, this
+        cannot be the permanent solution...because we don't want every list item to contain the
+        number 1.
+
+V.      We complete more of our Functional Test. Now, in addition, it will check a second item, and
+        see if both items are in the database. In so doing, it will check that the second item
+        begins with a "2".
+
+W.      Functional test fails because the first entry was not retained in the list.
+
+X.      We pause because, in addition to the fail, we have a "bad code smell." The code is getting
+        repetitive. We need to refactor to remove duplication before we fix the problem. Before doing a
+        refactor, we always make a commit.
+
+
+        

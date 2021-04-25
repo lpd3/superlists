@@ -41,3 +41,42 @@ e.	Re-run the Functional Test. If it fails, go back to step b.
 11.     You cannot refactor without tests.
 
 12.     When refactoring, work on either the code or the tests, but not both at once.
+
+13.     We have now seen all the main parts of the TDD process. These include:
+        A. Functional Tests
+        B. Unit Tests
+        C. The unit-test/code cycle
+        D. Refactoring
+
+14.     And here is the complete TDD process:
+        A. Write a test. Go to B.
+        B. Run the test. If it passes, go to C. If not, go to D.
+        C. Determine if there is a need for refactoring. If so, go to D. If not, go to A.
+        D. Write minimal code. Go to B.
+
+15.     Employing Functional Tests and Unit Tests, we have a double loop TDD process:
+        A. Write a functional test. Go to B.
+        B. Run the functional test. If it passes, Go to C. If not, go to D.
+        C. Determine whether the application needs refactoring. If so, go to D. If not, go to A.
+        D. Write a unit test. Go to E.
+        E. Run the unit test. If it passes, go to F. If not, go to G.
+        F. Determine whether the application needs refactoring. If so, go to G. If not, go to B.
+        G. Write minimal code. Go to E.
+
+16.     When a functional test fails with an unexpected failure, there are several things we can do
+        to debug it. These include (but are not limited to)
+        A. Add print statements, to show, for example what the current page text is.
+        B. Improve the error message to show more info about the current state.
+        C. Manually vist the site yourself.
+        D. Use time.sleep to pause the test during execution.
+
+17.     The basic TDD loop is sometimes called "Red, Green, Refactor". Write a test. It fails (RED). Write some
+        simple code that gets the test passes (GREEN). Change the code to make it better (REFACTOR). One way
+        to refactor is to remove duplicate code. A better, less nebulous, name for the last step would be
+        Triangulate. After the Green, we write a new test that does not allow our simple (perhaps cheating)
+        solution to work. Then we go back to the loop.
+
+18.     We check for "bad code smell." This occurs when the code is overly complex or repetitive. The
+        process of TDD, by using incremental steps, often requires us to use nearly identical code in
+        more than one place. We tolerate this duplication only once (allowing two pieces of code to be nearly
+        identical. Once we get to a third temptation to repeat the code, we stop and refactor.
