@@ -179,3 +179,29 @@ O.      Since test didn't fail, we create a deliberately failing condition to ch
 P.      Removed the test_root_url_resolves test. Removed all assertions except the assertTemplateUsed.
         django's client.get takes care of everything else.
 
+Q.      did a git add . because we now have a new html file to keep track of.
+
+R.      COMMIT 7: "Refactor home page view to use a template."
+
+S.      Since the functional test will still fail...the page still does not include h1...we now can change
+        our template to have this. And since we have a template, we do not need to create new unit tests
+        to test the functionality of the addition.
+
+T.      Functional tests fail because the element with id "id_new_item" cannot be found in the page.
+
+U.      Changed the template to include an input with id tag "id_new_item"
+
+V.      Functional tests fail because "Enter a to-do item" is not found in the page.
+
+W.      We add our placeholder variable to the home page.
+
+X.      Functional tests fail because the element with id "id_list_table" is not found on the page.
+
+Y.      We put an empty table in home with the correct id.
+
+Z.      Functional tests fail because "1: Buy peacock feathers" is not found in table. Also, the error
+        message is cryptic on behalf of the assertTrue function. We add an explicit error message to
+        this function.
+
+AA.     Functional tests fail again for the same reason. But now we have a more understandable error
+        message.
