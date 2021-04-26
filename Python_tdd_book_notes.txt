@@ -618,3 +618,40 @@ AK.     In the unit tests, we create a new class NewListTest, and move the
         test_redirects_after_POST and test_can_save_a_POST_request methods to
         this class. We also replaced the two asserts in test_redirects_after_POST
         to a single assertRedirects assertion.
+
+AL.     Unit tests fail for two reasons. First, no item gets into the list.
+        Second, the redirect is not working. We get a 404 error. This is because
+        we don't have a URL in place yet.
+
+AM.     We add a new URL to the urls file.
+
+AN.     Unit tests fail because there is no attribute named "new_list" in the views.
+
+AO.     We add a dummy new_list function to the views.
+
+AP.     Unit tests fail because the new_list function returned None instead of an HttpResponse object.
+
+AQ.     We borrow the redirect from the home page and put it under the new_list function.
+
+AR.     Unit tests fail because the list contains no items.
+
+AS.     We add another line from home_page.
+
+AT.     Unit tests pass.
+
+AU.     Functional test fails for the same reason as before: Contamination from a previous list.
+
+AV.     Now the code in the home_page method is unnecessary. We remove it.
+
+AW.     Unit tests pass.
+
+AX.     We remove the redundant test_only_saves_items_when_necessary
+
+AY.     Unit tests pass.
+
+AZ.     Functional test. Regression. It can't locate id_list_table. It's because our forms are still
+        pointing at the old URL.
+
+BA.     We change both templates to send the post to the right page.
+
+BB.     Functional test. Fails where we expect: There is contamination from the previous list.
