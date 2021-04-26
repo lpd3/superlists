@@ -529,3 +529,92 @@ D.      We begin by altering our functional tests. We change the name of one tes
 
 E.      The Functional test fails because the multiple user test cannot find the regex pattern
         /lists/.+ in the URL. This is expected. All previous tests continued to pass, as before.
+
+F.      COMMIT 14: "Functional test expanded to include more than one user"
+
+G.      Since the first part of our Functional Test to fail is item no. 2 on our to-do list, we
+        work on that one: Add unique URLs for each list. First, we go to tests.py, in
+        test_redirects_after_POST and change the expected redirect location. The name that the
+        test looks for is /lists/the-only-list-in-the-world/
+
+H.      The unit tests fail as expected because we aren't redirected to /lists/the-only-list-in-the-world/
+
+I.      We change our home view that so it redirects to /lists/the-only-list-in-the-world/
+
+J.      Functional test fails from the very beginning. It cannot locate the redirect, and it can't
+        find anything that it is trying to enter. We have broken our code. Introduced a regression.
+        We need to go back and get it working again.
+
+K.      We go back to our unit tests and introduce a new class ListViewTest. We cut out the method
+        test_displays_all_list_items, paste it into our new class, change its name by removing "list",
+        and alter the response to the the new URL name we are seeking. We are also using
+        assertContains, another Django method.
+
+L.      Unit test failed because of a code 404. In short, there is no web page with that name yet
+        on the site. This is expected. A nice side-effect of using assertContains, is that it makes
+        the source of the error crystal clear.
+
+M.      We go to the urls file and add our new url to the list.
+
+N.      Unit test fails because the view 'view_list' does not exist.
+
+O.      We create a dummy view function in views.
+
+P.      Unit test fails because the few function returns None instead of an HttpResponse object.
+
+Q.      We copy the last two lines from the home_page view function and paste them under view_list.
+
+R.      Unit test passes.
+
+S.      Functional test fails. The project is still broken. We can't add a second item the list.
+
+T.      The problem is that the home.html input fom doesn't specify an explicit URL for the post.
+        Rather than doing a complete rewrite with a bunch of new unit tests, we can direct to the home page.
+
+U.      Functional test fails but is back to a happier place. We still cannot have more than one user.
+
+V.      Time for refactoring. We should have two templates, one for home, one for displaying the list.
+        First, we create a new unit test. Add test_uses_list_template to ListViewTest.
+
+W.      Unit test fails because there is no list.html template.
+
+X.      Next we change the view to use the list.html template.
+
+Y.      Unit test fails because there is no list.html template.
+
+Z.      We create a list template. An empty file.
+
+AA.     Unit tests fail because the first item is not appearing on the page.
+
+AB.     We copy the home template code to the list template code.
+
+AC.     Unit tests pass.
+
+AD.     Time to refactor. We get rid of the code in the home template that we don't need any more.
+
+AE.     Unit tests pass.
+
+AF.     We go to views, and simplify home_page so that it doesn't send everything to the home page.
+
+AG.     Unit tests pass.
+
+AH.     Functional tests fail. We are still seeing contamination from the previous user in our new user's list.
+        This may seem like we have wasted a great deal of time, since the functionality of the product
+        is similar to what it was before we started making changes. However, we have begun to completely
+        change our code so that things are heading in the right direction. And we didn't break anything in the
+        process.
+
+AI.     COMMIT 15: "New URL, view and template to display lists"
+
+AJ.     We review our To-Do list
+        1. Adjust model so that items are associated with different lists.
+        2. Add unique URLs for each list.
+        3. Add a URL for creating a new list via POST
+        4. Add URLs for adding a new item to an existing list via POST.
+
+        We worked on #2, but didn't finish it. For now, we will go to #3.
+
+AK.     In the unit tests, we create a new class NewListTest, and move the
+        test_redirects_after_POST and test_can_save_a_POST_request methods to
+        this class. We also replaced the two asserts in test_redirects_after_POST
+        to a single assertRedirects assertion.

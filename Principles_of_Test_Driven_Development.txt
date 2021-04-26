@@ -133,3 +133,6 @@ e.	Re-run the Functional Test. If it fails, go back to step b.
 
 30.     In our functional tests, we have outlined a user story in comments. We can
         also make metacomments to ourselves using double hash marks ##.
+
+31.     When all the unit tests are passing, but the functional tests are not, it's often
+        pointing at a problem that's not convered by the unit tests.
