@@ -655,3 +655,55 @@ AZ.     Functional test. Regression. It can't locate id_list_table. It's because
 BA.     We change both templates to send the post to the right page.
 
 BB.     Functional test. Fails where we expect: There is contamination from the previous list.
+
+BC.     COMMIT 16: "Changed URLs, cleaned up views"
+
+BD.     We have completed to-do item number three. Now we go to #1: Adjust model so that items
+        are associated with different lists.
+
+BE.     We change the model unit test.
+
+BF.     Unit tests fail because it cannot find List in lists.models
+
+BG.     Created a dummy List class in models.
+
+BH.     Unit tests fails because List has no attribute 'save'
+
+BI.     Make List inhert from django.models.Model
+
+BJ.     Unit tests fail because it can't find the table lists_list
+
+BK.     We makemigrations.
+
+BL.     Unit tests fail because Item object has no attribute "list".
+
+BM.     In models, gave Item a list attribute defined exactly the same way as the text attribute.
+
+BN.     Unit test fails because the database has no column lists_item.list
+
+BO.     We make migrations
+
+BP.     Unit tests fail because the migrations have saved the field "List object" as a text
+        label rather than as an object.
+
+BQ.     We adjust the definition of Item.list = models.ForeignKey(List, default=None)
+
+BR.     Since the previous migration was a screw-up, we reverse it.
+
+BS.     We make migrations.
+
+BT.     Unit tests fail badly. The model tests are passing. But three view tests are failing.
+        Our new code requires each item to have a parent list. We have not supplied that.
+
+BU.     We change the ListViewTest by creating a parent list for our two test items.
+
+BV.     We change the view so that it includes a parent list when a new item is created.
+
+BW.     Unit tests pass.
+
+BX.     Functional tests fail in the same place as before: there is contamination from prior lists.
+
+BY.     COMMIT 17: "Items now go to different lists."
+
+
+
