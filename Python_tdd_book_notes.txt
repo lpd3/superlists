@@ -705,5 +705,84 @@ BX.     Functional tests fail in the same place as before: there is contaminatio
 
 BY.     COMMIT 17: "Items now go to different lists."
 
+BZ.     To-do item #2: Each list should have its own URL. To get started, the URL will simply
+        be the auto-generated ID field from the database.
 
+CA.     We change the ListViewTest so that the two tests point at new URLs. We change
+        test_displays_all_items to test_displays_only_items_for_that_list, and performs
+        what it says it does.
 
+CB.     Unit tests fail because the response in the test is seeking a page that doesn't exist.
+        Also, no template is being currently used to render this non-existent page.
+
+CC.     We alter the url file so that it recognizes the new pattern based on a regex.
+
+CD.     Unit tests fail for several reasons. The first, and most salient, failure is
+        due to the fact that our view function is being given two arguments, when it
+        expects only one.
+
+CE.     Added a dummy parameter to the view_list view.
+
+CF.     Unit tests fail because there was cross-list contamination.
+
+CG.     Changed the view_list view so that it can recognize items on a particular list,
+        and renders the request to display only the items on THAT list.
+
+CH.     Unit tests fail because the test_redirects_after_POST has not been changed to reflect
+        the new situation.
+
+CI.     Fixed test_redirects_after_POST so that it is searching for the correct redirect address.
+
+CJ.     Unit tests fail because of invalid literal...the view is not redirecting to the right address.
+
+CK.     Fix view so it redirects to the correct address.
+
+CL.     Unit tests pass.
+
+CM.     Functional tests fail because each list can only save one item.
+
+CN.     To-do 4: Add URLs for adding a new item to an existing list via POST.
+
+CO.     We create a new unit test class: NewItemTest. It contains these tests:
+        test_can_save_a_POST_request_to_an_existing_list, test_redirects_to_list_view
+
+CP.     Unit tests fail in an unexpected way. We have no URL yet for /lists/1/add_item,
+        and therefore, we should fail because our reponse code was 404. But instead,
+        it failed because our response code was 301, permanently moved. It turns out
+        our current URL specification uses a regex that is too greedy. Django automatically
+        issues a code of 301 if a URL request is almost correct, but not quite.
+
+CQ.     Changed the end of the final URL regex from (.+)/$ to (\d+)/$.
+
+CR.     Unit tests fail expectedly...code 404, because we don't yet have a URL for
+        the new way of doing things.
+
+CS.     Add new URL to deal with adding items.
+
+CT.     Our URLs look rather similar. We add a fifth item to our to-do list: refactor the URLs.
+
+CU.     Unit tests fail because list.views has no attribute 'add_item'.
+
+CV.     We add a dummy method add_item to our views.
+
+CW.     Unit tests fail because add_item is given two arguments but only has one parameter.
+
+CX.     Dummy paramter added to add_item
+
+CY.     Unit tests fail because list.views.add_item returned None instead of an HttpResponse object.
+
+CZ.     redirect from new_list and List.objects.get from view_list copied to add_item.
+
+DA.     Unit tests fail because items are not appearing in the lists.
+
+DB.     alter add_item so it saves the list item.
+
+DC.     Unit tests pass.
+
+DD.     We need to add our new view to our list.html template. We add a new unit test
+        test_passes_correct_list_to_template to the unit tests.
+
+DE.     Unit tests fail because we're not passing 'list' to the template, and the \
+        test does not recognize this as a key.
+
+DF.     We change view_list in views (making it simpler)
