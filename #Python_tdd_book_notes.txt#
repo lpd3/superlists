@@ -885,4 +885,18 @@ Z.      We want to tweak the appearance just a little more, in a way that Bootst
         handle. We are going to make our own CSS file for this. We start out by going to the base.html file
         and make room for it. Then we add our CSS file to the static folder. 
 
-AA.     Functional tests pass. We didn't break anything in the improvements to the 
+AA.     Functional tests pass. We didn't break anything in the improvements to the layout.
+
+AB.     COMMIT 22: "Use Bootstrap to improve layout"
+
+AC.     Now, when we deploy this site, we will not out computer to be the server for the static files.
+        Using Python to do this through a computer is slow. We need to have other options. Generally,
+        we wish to gather all our static files together, and copy them to a single location. Django
+        has a command for this: "collectstatic". This address of the file will be the location designated
+        in the settings under the variable STATIC_ROOT. We alter the settings file supplying a STATIC_ROOT
+        location. Then we run manage.py collectstatic. We notice that 76 files were moved to the new
+        STATIC_ROOT file, including many that have to do with the admin page, which we haven't used yet.
+        So we comment out django.contrib.admin under INSTALLED_APPS in the settings file, erase our static
+        file and run collectstatic again. Now, we have 15 files.
+
+AD.     We also put the top level static file in the gitignore. 
