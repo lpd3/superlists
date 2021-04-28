@@ -1,4 +1,4 @@
-﻿PREREQUISITES AND ASSUMPTIONS
+PREREQUISITES AND ASSUMPTIONS
 
 Assumptions:	
 1.	You know how to write code in Python 3
@@ -877,3 +877,12 @@ W.      Now, to make the main page header bigger, we use bootstrap's "jumbotron"
 
 X.      But now the input text box looks too small. So we set input to large. We add this line to
         the input tag: class="form-control input-lg"
+
+Y.      And the table also looks too small. So we add the Bootstrap table class, and make improvements.
+        We do this in the list.html template.
+
+Z.      We want to tweak the appearance just a little more, in a way that Bootstrap doesn't automatically
+        handle. We are going to make our own CSS file for this. We start out by going to the base.html file
+        and make room for it. Then we add our CSS file to the static folder. 
+
+AA.     Functional tests pass. We didn't break anything in the improvements to the 
