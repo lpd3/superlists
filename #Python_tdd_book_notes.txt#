@@ -899,4 +899,19 @@ AC.     Now, when we deploy this site, we will not out computer to be the server
         So we comment out django.contrib.admin under INSTALLED_APPS in the settings file, erase our static
         file and run collectstatic again. Now, we have 15 files.
 
-AD.     We also put the top level static file in the gitignore. 
+AD.     We also put the top level static file in the gitignore.
+
+AE.     COMMIT 23: "Set STATIC_ROOT in settings and disable admin"
+
+CHAPTER 9: TESTING DEPLOYMENT USING A STAGING SITE
+
+A.      We alter our functional tests slightly so that they can be run against a staging site, instead of the local
+        dev server.
+
+B.      Functional tests pass.
+
+C.      Now we run Functional tests against the staging server.
+
+D.      All Functional tests fail, because we don't have a staging server yet.
+
+E.      COMMIT 24: "Hack FT runner to be able to test staging" 
