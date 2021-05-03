@@ -877,3 +877,59 @@ W.      Now, to make the main page header bigger, we use bootstrap's "jumbotron"
 
 X.      But now the input text box looks too small. So we set input to large. We add this line to
         the input tag: class="form-control input-lg"
+
+Y.      Adjusted table styling with the addition of Bootstrap table class.
+
+Z.      Wrote a tiny bith of raw CSS code to further tweak the styling.
+
+AA.     Functional tests pass.
+
+AB.     COMMIT 22: "Use Bootstrap to improve layout".
+
+AC.     In preparation for deployment, we add a static file, and adjust the variables referring to
+        static files in the settings.
+
+AD.     We run manage.py collectstatic to gather all the static files into our static folder. But
+        in so doing, we have also picked up all the CSS files for the admin. Since we are not going
+        to be using these for awhile, we should back up.
+
+AE.     In the settings, we comment out the installed app django.contrib.admin. We remove the static
+        file and run collectstatic again. This time, only the static files we currently need are
+        allocated to the static folder.
+
+AF.     COMMIT 24: "Set STATIC_ROOT in settings and disable admin".
+
+CHAPTER 9: TESTING DEPLOYMENT USING A STAGING SERVER
+
+A.      Fleshed out FT more. It now checks for an environmental variable called STAGING_SERVER
+
+B.      FT fails miserably, as expected. We have no server.
+
+C.      COMMIT 25: Hack FT runner to be able to test staging".
+
+D.      Found my old domain name: beethovenkawaski.com, administered through google domains.
+
+D.      Set up a server on Digital Ocean. It is a Linux server. Generated my own ssh key.
+        Attached to the server (the "droplet"). Attached the google domain to the server.
+        Successfully accessed the server via ssh from the terminal. Generated the account
+        elspeth (in addition to the admin account). Set up apex domains for superlists and
+        superlists-staging. ipv4 of droplet is 159.89.44.252
+        To log in from the shell, type ssh [account-name]@[server-ip-address]. Password
+        for elspeth is the same as my root password.
+
+E.      Installed Python3.6 and venv on server via the deadsnakes repository.
+
+F.      Installed git on the server. (It was already installed)
+
+G.      Loaded code of this project onto github.
+
+H.      Cloned git from github onto server.
+
+I.      Attempt to run the server failed because Django is not installed on the server.
+
+J.      File requirements.txt created locally containing the text "django==1.11", and added it to git.
+
+K.      COMMIT 23: "Add requirements.txt for virtualenv"
+
+
+

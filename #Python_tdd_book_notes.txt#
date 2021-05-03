@@ -878,40 +878,125 @@ W.      Now, to make the main page header bigger, we use bootstrap's "jumbotron"
 X.      But now the input text box looks too small. So we set input to large. We add this line to
         the input tag: class="form-control input-lg"
 
-Y.      And the table also looks too small. So we add the Bootstrap table class, and make improvements.
-        We do this in the list.html template.
+Y.      Adjusted table styling with the addition of Bootstrap table class.
 
-Z.      We want to tweak the appearance just a little more, in a way that Bootstrap doesn't automatically
-        handle. We are going to make our own CSS file for this. We start out by going to the base.html file
-        and make room for it. Then we add our CSS file to the static folder. 
+Z.      Wrote a tiny bith of raw CSS code to further tweak the styling.
 
-AA.     Functional tests pass. We didn't break anything in the improvements to the layout.
+AA.     Functional tests pass.
 
-AB.     COMMIT 22: "Use Bootstrap to improve layout"
+AB.     COMMIT 22: "Use Bootstrap to improve layout".
 
-AC.     Now, when we deploy this site, we will not out computer to be the server for the static files.
-        Using Python to do this through a computer is slow. We need to have other options. Generally,
-        we wish to gather all our static files together, and copy them to a single location. Django
-        has a command for this: "collectstatic". This address of the file will be the location designated
-        in the settings under the variable STATIC_ROOT. We alter the settings file supplying a STATIC_ROOT
-        location. Then we run manage.py collectstatic. We notice that 76 files were moved to the new
-        STATIC_ROOT file, including many that have to do with the admin page, which we haven't used yet.
-        So we comment out django.contrib.admin under INSTALLED_APPS in the settings file, erase our static
-        file and run collectstatic again. Now, we have 15 files.
+AC.     In preparation for deployment, we add a static file, and adjust the variables referring to
+        static files in the settings.
 
-AD.     We also put the top level static file in the gitignore.
+AD.     We run manage.py collectstatic to gather all the static files into our static folder. But
+        in so doing, we have also picked up all the CSS files for the admin. Since we are not going
+        to be using these for awhile, we should back up.
 
-AE.     COMMIT 23: "Set STATIC_ROOT in settings and disable admin"
+AE.     In the settings, we comment out the installed app django.contrib.admin. We remove the static
+        file and run collectstatic again. This time, only the static files we currently need are
+        allocated to the static folder.
 
-CHAPTER 9: TESTING DEPLOYMENT USING A STAGING SITE
+AF.     COMMIT 24: "Set STATIC_ROOT in settings and disable admin".
 
-A.      We alter our functional tests slightly so that they can be run against a staging site, instead of the local
-        dev server.
+CHAPTER 9: TESTING DEPLOYMENT USING A STAGING SERVER
 
-B.      Functional tests pass.
+A.      Fleshed out FT more. It now checks for an environmental variable called STAGING_SERVER
 
-C.      Now we run Functional tests against the staging server.
+B.      FT fails miserably, as expected. We have no server.
 
-D.      All Functional tests fail, because we don't have a staging server yet.
+C.      COMMIT 25: Hack FT runner to be able to test staging".
 
-E.      COMMIT 24: "Hack FT runner to be able to test staging" 
+D.      Found my old domain name: beethovenkawaski.com, administered through google domains.
+
+E.      Set up an account on Digital Ocean.
+
+F.      Generated my own ssh key locally.
+
+G.      Created a server ("droplet") on Digital Ocean, attaching the ssh key. (ipv4 of droplet is 159.89.44.252)
+
+H.      Attached the google domain to the server.
+
+I.      Successfully accessed the server via ssh from the terminal.
+
+J.      Generated the account elspeth. Password can be found on LastPass under elspeth@159.89.44.252
+
+K.      Linked ssh key to elspeth and granted elspeth superuser status.
+
+L.      Erased auto-generated root domain and set up apex domains for superlists and superlists-staging. 
+
+E.      Installed Python3.6 and venv on server via the deadsnakes repository.
+
+F.      Installed git on the server. (It was already installed)
+
+G.      Loaded code of this project onto github.
+
+H.      Cloned git from github onto server.
+
+I.      Attempt to run the server failed because Django is not installed on the server.
+
+J.      File requirements.txt created locally containing the text "django==1.11", and added it to git.
+
+K.      COMMIT 23: "Add requirements.txt for virtualenv"
+
+L.      git pushed from local, and git pulled from server.
+
+M.      Set up a virtualenv in the superlists-staging file.
+
+N.      Successfully installed Django on the server, by pip installing (-r) from the requirements.txt file.
+
+O.      Successfully launched the server for the first time.
+
+P.      Functional tests failed because the local bash could not find the website we requested.
+        In the code of the attempt, we defined the  STAGING_SERVER variable as our website. We
+        also used the --failfast option to manage.py test. This causes the tests to clean up
+        and close as soon as the first fail occurs.
+
+Q.      We have pointed Django to our website. We have been running Django on the local host,
+        and specified port 8000 in our project code. This causes no problems. But websites are typically run on port
+        80, and that is where the functional tests are looking, now that we specified an external website.
+
+R.      Functional tests run again, specifically pointing at port 8000 on the site. The tests fail again for
+        the exact same reason.
+
+S.      Attempted a BASH curl (from local bash) on the superlists-staging subdomain. Connection refused.
+
+T.      Attempted to reach the same site directly through Firefox. Connection could not be established.
+
+U.      Performed a BASH curl from the server (using localhost:8000). Success: the contents of the base
+        HTML template are printed to the screen.
+
+V.      It turns out that Django's development server is figured to listen in on //127.0.0.1:8000, the
+        development server. But we started an external server, at an address that Django is not monitoring.
+
+W.      We shut down the server and restart it, specifying the address 0.0.0.0:8000 (this will cause
+        Django to listen on all addresses). Server starts without a hitch.
+
+X.      From the server, curl localhost:8000 works just as before.
+
+Y.      curl from laptap is successful (YES!)
+
+Z.      Attempt to run functional tests fails. Firefox launches, but no page is loaded; not even an
+        error page. On server there is an error message that the HTTP_HOST header is invalid
+
+AA.     Added the address of my project to the ALLOWED_HOSTS variable of settings.
+
+AB.     COMMIT 23A. "Address of my project added to ALLOWED_HOSTS"
+
+AC.     Attempt to run Functional Tests had the same results.
+
+AD.     Actually, this error was very similar to the error the book predicted next, but not identical.
+        In the book, the server caught the error and displayed it. However, this was not the case
+        for my trial. Instead of adding the my site to the allowed host, I used the wildcard *, as
+        specified in the book.
+
+AE.     COMMIT 24: "hack ALLOWED_HOSTS to be *"
+
+
+
+
+
+
+
+
+

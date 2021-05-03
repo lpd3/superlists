@@ -1,138 +1,706 @@
 ﻿PRINCIPLES OF TEST DRIVEN DEVELOPMENT (TDD)
 
-1.	Obey the testing goat!
+PREREQUISITES AND ASSUMPTIONS
 
-The basic procedure is:
-a.	Write a test
-b.	Run it to assure that it fails.
-c.	Write the simplest code that makes the test pass.
+0.1:    Python 3 and programming
+0.2:    How HTML works
+0.3:    Django
+0.4:    JavaScript
+Box:    A note on IDEs
+0.5:    Required software installations
+Box:    Windows notes
+Box:    MacOS notes
+Box:    Linux notes
+0.5.1:  Git's default editor, and other basic git config
+0.5.2:  Installing Firefox and Geckodriver
+0.6:    Setting up your virtualenv
+0.6.1:  Activating and deactivating the virtualenv
+Box:    Activate not working on Windows?
+0.7:    Installing Django and Selenium
+0.8:    Some error messages you're likely to see when you inevitably fail to activate the virtualenv
+Box:    On Anaconda
 
-2.	Design your functional test by creating a “user story”: a script of the user’s
-	experience using the application.
 
-3.	Expected failure: A test that fails in a way that we predict ahead of time. In TDD,
-	this is a much-encountered, and hoped-for situation.
+PART 1: THE BASICS OF TDD AND DJANGO
 
-4.	Unit test: A “behind the scenes test”. This is a test of bit of code functionality.
-	It is sharply differentiated from the “functional test”, a test of the application as
-	a whole from the user perspective.
+CHAPTER 1: GETTING DJANGO SET UP USING A FUNCTIONAL TEST
 
-5.	TDD steps, 2nd version
-a.	Write a Functional Test based on a user narrative, and make sure it fails.
-b.	Consider how to make the Functional Test pass in the simplest way.
-c.	Write a unit test to test the basic function of the proposed code change. Get it
-	to fail.
-d.	Write code until you can get the unit test to pass.
-e.	Re-run the Functional Test. If it fails, go back to step b.
-	If not, flesh out the Functional Test a little more, get it to fail, and go back to b.
+1.1:    Obey the testing goat! Do nothing until you have a test.
+Box:    Adieu to Roman numerals
+1.2:    Getting Django up and running.
+1.3:    Starting a Git repository.
+Box:    Our working directory is always the folder that contains manage.py
 
-6.      When making a git commit, always review it first.
+CHAPTER 2: EXTENDING OUR FUNCTIONAL TEST USING THE unittest MODULE
 
-7.      It may seem ludicrous to test miniscule changes in code. However, it is difficulty to
-        determine when a project is becoming complex. Testing all along allows the project
-        to be rigrously tested when it becomes complex.
+2.1:    Using a functional test to scope out a minimum viable app.
+Box:    Functional test == acceptance test == end-to-end test
+Box:    We have a word for comments.
+2.2:    The Python Standard Library's unittest module.
+2.3:    Commit
+Box:    Useful TDD Concepts
+        (A): User story
 
-8.      A rule about functional tests: DON'T TEST CONSTANTS.
+        A description of how the application will work from the point of view of the user. Used to structure
+        a functional test.
 
-9.      Unit tests are really about testing logic, flow control and configuration.
+        (B): Expected failure
 
-10.     Refactoring: Improving the code WITHOUT CHANGING ITS FUNCTIONALITY
+        When a test fails in the way that we expected it to.
 
-11.     You cannot refactor without tests.
+CHAPTER 3: TESTING A SIMPLE HOME PAGE WITH UNIT TESTS
 
-12.     When refactoring, work on either the code or the tests, but not both at once.
+Box:    Warning: Things are about to get real.
+3.1:    Our first Django app, and our first unit test.
+3.2:    Unit tests, and how they differ from functional tests.
+3.3:    Unit testing in Django.
+3.4:    Django's MVC (Model-View-Controller), URLs, and view functions.
+3.5:    At last! We actually write some application code!
+Box:    Reading tracebacks
+3.6:    urls.py
+3.7:    Unit testing a view
+3.7.1:  The unit-test/code cycle
+Box:    Useful commands and concepts
+        (A). Running the Django dev server
 
-13.     We have now seen all the main parts of the TDD process. These include:
-        A. Functional Tests
-        B. Unit Tests
-        C. The unit-test/code cycle
-        D. Refactoring
+        python3 manage.py runserver
 
-14.     And here is the complete TDD process:
+        (B). Running the functional tests
+
+        python3 functional_tests.py
+
+        (C). Running the unit tests
+
+        python3 manage.py test
+
+        (D). The unit-test/code cycle
+
+             1. Run the unit tests in the terminal.
+             2. Make a minimal code change in the editor.
+             3. Repeat.
+
+CHAPTER 4: WHAT ARE WE DOING WITH ALL THESE TESTS? (AND, REFACTORING)
+
+4.1     Programming is like pulling a bucket up from a well
+Box:    On the merits of trivial tests for trivial functions
+4.2     Using Selenium to test user interactions
+4.3     The "Don't test constants" rule, and templates to the rescue
+4.3.1:  Refactoring to use a template.
+4.3.2:  The Django test client
+Box:    Why didn't we just use the Django test client all along?
+4.4     On refactoring
+4.5     A little more of our front page
+4.6     Recap: The TDD Process
+
         A. Write a test. Go to B.
         B. Run the test. If it passes, go to C. If not, go to D.
-        C. Determine if there is a need for refactoring. If so, go to D. If not, go to A.
+        C. Consider whether the code needs refactoring. If so, go to D. If not, go to A.
         D. Write minimal code. Go to B.
 
-15.     Employing Functional Tests and Unit Tests, we have a double loop TDD process:
+        Employing Functional and Unit tests, we have
+
         A. Write a functional test. Go to B.
-        B. Run the functional test. If it passes, Go to C. If not, go to D.
-        C. Determine whether the application needs refactoring. If so, go to D. If not, go to A.
+        B. Run the functional test. If the functional test passes, go to C. If not, go to D.
+        C. Consider whether the application needs refactoring. If so, go to D. If not, go to A.
         D. Write a unit test. Go to E.
-        E. Run the unit test. If it passes, go to F. If not, go to G.
-        F. Determine whether the application needs refactoring. If so, go to G. If not, go to B.
+        E. Run the unit test. If the unit test passes, go to F. If not, go to G.
+        F. Consider whether the application needs refactoring. If so, go to G. If not, go to B.
         G. Write minimal code. Go to E.
+Box:    How to "check" your code, or skip ahead (if you must).
 
-16.     When a functional test fails with an unexpected failure, there are several things we can do
-        to debug it. These include (but are not limited to)
-        A. Add print statements, to show, for example what the current page text is.
-        B. Improve the error message to show more info about the current state.
-        C. Manually vist the site yourself.
-        D. Use time.sleep to pause the test during execution.
+CHAPTER 5: SAVING USER INPUT: TESTING THE DATABASE.
 
-17.     The basic TDD loop is sometimes called "Red, Green, Refactor". Write a test. It fails (RED). Write some
-        simple code that gets the test passes (GREEN). Change the code to make it better (REFACTOR). One way
-        to refactor is to remove duplicate code. A better, less nebulous, name for the last step would be
-        Triangulate. After the Green, we write a new test that does not allow our simple (perhaps cheating)
-        solution to work. Then we go back to the loop.
+5.1:    Wiring up our form to send a POST request.
+Box:    Security: Surprisingly fun!
+5.2:    Processing a POST request on the server.
+5.3:    Passing Python variables to be rendered in the template.
+5.3.1:  An unexpected failure
+Box:    Red/Green/Refactor and Triangulation
 
-18.     We check for "bad code smell." This occurs when the code is overly complex or repetitive. The
-        process of TDD, by using incremental steps, often requires us to use nearly identical code in
-        more than one place. We tolerate this duplication only once (allowing two pieces of code to be nearly
-        identical. Once we get to a third temptation to repeat the code, we stop and refactor.
+        Red: Make a test that fails.
+        Green: Write the least amount of code necessary to get the code to pass.
+        Refactor: Clean up the code.
 
-19.     For now, we deal with Functional Tests and Unit Tests. Our test of database functioning is accomplished
-        through the Unit Tests. However, in reality, tests which assess the behavior of objects outside the
-        code, such as databases, are properly called Integrated Tests. We will ignore this distinction for now
-        and come back to it later.
+        Refactoring amounts to triangulation: get rid of duplication (3 strikes then refactor),
+        and look for "cheats" that got your code to pass. Write a new test that doesn't allow the
+        cheat to pass.
 
-20.     Each test method in the unit tests should test only one thing.
+5.4:    Three strikes and a refactor
+5.5:    The Django ORM (Object-Relational Mapper) and our first model.
+Box:    Terminology 2: Unit tests versus integrated tests, and the database.
 
-21.     A helpful, but not mandatory, way to organize a unit test method is as follows:
-        the set-up section (followed by a blank line)
-        a line in the middle that calls what is being tested (followed by a blank line)
-        the test: the assertion or assertions made about the results of calling the code.
+        Purists call tests of the database and other outside objects an integrated test.
 
-22.     Regression: when new code breaks some aspect of the application which used to work.
+5.5.1:  Our first database migration
+5.5.2:  The test gets surprisingly far
+5.5.3:  A new field means a new migration
+5.6:    Saving the POST to a database
+5.7:    Redirect after a POST
+5.7.1:  Better unit testing practice: each test should test one thing.
+5.8:    Rendering items in the template.
+5.9:    Creating our production database with migrate
+5.10:   Recap
 
-23.     Unexpected failure: When a test fails in a way we weren't expecting. This either means
-        that we've made a mistake in our tests, or that the tests have helped us to find a
-        regression, and we need to fix something in our code.
+Box:    Useful TDD concepts
 
-24.     Test isolation. We need to make sure that our tests leave behind nothing that will
-        influence the next test session, or the running of the probject. Therefore, tests
-        should clean up after themselves. In our pet project, the unit tests automatically
-        self-clean. The functional tests do not.
+        (A). Regression
+        When new code breaks some aspect of the application which used to work.
 
-25.     Avoid "voodoo sleeps" in testing. These are explicit waits. Instead, create routines
-        based on loops that keep checking for a desired item over a set period of time.
+        (B). Unexpected failure
+        When a test fails in a way we weren't expecting. This either means that we've made
+        a mistake in our tests, or that the tests have helped us find a regression, and we
+        need to fix something in our code.
 
-26.     Do not rely on Selenium implicit waits. They are unreliable.
+        (C). Red/green/refactor
+        Another way of describing the TDD process. Write a test and see it fail (red), write some
+        code to get it to pass (green), the refactor to improve the implementation.
 
-27.     TDD is part of the agile design movement. It is largely a reaction against the standard
-        design paradigm Big Design Up Front: BDUF. This alternative paradigm is to first
-        have a lengthy requirements gathering meeting. Then, the design of the project
-        is thoroughly planned on paper. It is only after these initial stages that the
-        project code gets written. TDD is different. We start with a Functional Test
-        as a model of the User Experience. Then we write code incrementally, with the
-        goal of getting a viable application up and running immediately. We build our
-        project based on its confrontation with real-world usage and testing, rather
-        than envisioning the entire project up front.
+        (D). Triangulation:
+        Adding a test case with a new specific example for some existing code, to justify generalising
+        the implementation (which may be a "cheat" until that point).
 
-28.     YAGNI: You Ain't Gonna Need It. Planning a project can be fun. We can get
-        lost in all the cool things we want to add to the project. We like to create
-        and write code, so we end up making our project elephantine and brittle, with
-        the end result that we include many features that the user never touches.
-        Always keep this acronym in mind as you think about the direction and design
-        of your projects.
+        (E). Three strikes and refactor
+        A rule of thumb for when to remove duplication from code. When two pieces of code look very similar,
+        it often pays to wait until you see a third use case, so that you're more sure about what part of the
+        code really is the common, re-usable part to refactor out.
 
-29.     REST: REpresentational State Transfer. This is an approach to web design
-        with the idea that the user experience should be mirrored in the structure
-        of the site. For example, the URL structure should match the data structre of
-        the project.
+        (F). The scrachpad to-do list
+        A place to write down things that occur to us as we're coding, so that we can finish up what we're
+        doing and come back to them later.
 
-30.     In our functional tests, we have outlined a user story in comments. We can
-        also make metacomments to ourselves using double hash marks ##.
+CHAPTER 6: IMPROVING FUNCTIONAL TESTS: ENSURING ISOLATION AND REMOVING VOODOO SLEEPS
 
-31.     When all the unit tests are passing, but the functional tests are not, it's often
-        pointing at a problem that's not convered by the unit tests.
+6.1:    Ensuring test isolation in functional tests.
+6.1.1:  Running just the unit tests.
+Box:    Useful commands updated
+6.2:    Aside: Upgrading Selenium and Geckodriver
+6.3:    On implicit and explicit waits, and voodoo time.sleeps
+Box:    Testing "Best practices" applied in this chapter
+
+        (A). Ensuring test isolation and managing global state.
+        Different tests shouldn't affect one another. This means we need to reset any permanent state at
+        the end of each test. Django's test runner helps us to do this by creating a test database, which
+        it wipes clean in between each test.
+
+        (B). Avoid "voodoo" sleeps
+        Whenever we need to wait for something to load, it's always tempting to throw a quick-and-dirty time.sleep.
+        But the problem is that the length of time we wait is always a bit of a shot in the dark, either too short
+        and vulnerable to spurious failures, or too long and it'll slow down our test runs. Prefer a retry loop that
+        polls our app and moves on as soon as possible.
+
+        (C). Don't rely on Selenium's implicit waits.
+        Selenium does theoretically do some "implicit" waits, but the implemenation varies between browsers, and at the
+        time of writing was highly unreliable in the Selenium 3 Firefox driver. "Explicit is better than implicit",
+        as the Zen of Python says, so prefer explicit waits.
+
+CHAPTER 7: WORKING INCREMENTALLY
+7.1:    Small design when necessary
+7.1.1:  Not big design up front
+7.1.2:  YAGNI! (You Ain't Gonna Need It)
+7.1.3:  REST(ish) (REpresentational State Transfer)
+7.2:    Implementing the new design incrementally using TDD
+7.3:    Ensuring we have a regression test.
+7.4:    Iterating towards the new design.
+7.5:    Taking a first, self-contained step: one new URL.
+7.5.1:  A new URL.
+7.5.2:  A new view function.
+7.6:    Green? Refactor.
+7.7:    Another small step: a separate template for viewing lists.
+7.8:    A third small step: a URL for adding list items.
+7.8.1:  A test class for new list creation.
+7.8.2:  A URL and view for new list creation.
+7.8.3:  Removing now-redundant code and tests.
+7.8.4:  A regression! Pointing our forms at the new URL.
+7.9:    Biting the bullet: Adjusting our models.
+7.9.1:  A foreign key relationship.
+7.9.2:  Adjusting the rest of the world to our new models.
+7.10:   Each list should have its own URL.
+7.10.1: Capturing parameters from URLs.
+7.10.2: Adjusting new_list to the new world.
+7.11:   The functional tests detect another regression.
+7.12:   One more view to handle adding items to an existing list.
+7.12.1: Beware of greedy regular expressions!
+7.12.2: The last new URL.
+7.12.3: The last new view.
+7.12.4: Testing the response context objects directly.
+7.13:   A final refactor using URL includes.
+Box:    Some more TDD philosophy
+
+        (A). Working state to working state (aka the testing goat vs. refactoring cat)
+        Our natural urge is often to dive in and fix everything at once...but if we're not
+        careful, we'll end up like the refactoring cat, in a situation with loads of changes
+        to our code and nothing working. The testing goat encourages us to take one step at
+        a time, and go from working state to working state.
+
+        (B). Split work out into small, achievable tasks
+        Sometimes this means staring with "boring" work rather than diving straight in with
+        the fun stuff, but you'll have to trust that YOLO-you in the parallel universe is
+        probably haing a hard time, having broken everything, and struggling to get the app
+        working again.
+
+        (C). YAGNI
+        You ain't gonna need it! Avoid the temptation to write code that you think might be useful,
+        just because it suggests itself at the time. Chances are, you won't use it, or you won't have
+        anticipated your future requirements correctly.
+
+PART II: WEB DEVELOPMENT SINE QUA NONS
+
+CHAPTER 8: PRETTIFICATION: LAYOUT AND STYLING, AND WHAT TO TEST ABOUT IT
+
+8.1:    What to functionally test about layout and style
+8.2:    Prettification: Using a CSS framework.
+8.3:    Django template inheritance.
+8.4:    Integrating Bootstrap.
+8.5:    Static files in Django.
+8.5.1:  Switching to StaticLiveServerTestCase
+8.6:    Using Boostrap components to improve the look of the site.
+8.6.1:  Jumbotron!
+8.6.2:  Large inputs.
+8.6.3:  Table styling
+8.7:    Using our own CSS.
+8.8:    What we glossed over: collectstatic and other static directories.
+8.9:    A few things that didn't make it.
+Box:    Recap: On testing design and layout.
+
+CHAPTER 9: TESTING DEPLOYMENT USING A STAGING SITE
+
+9.1:    TDD and the danger areas of deployment.
+Box:    Deployment chapters overview
+9.2:    As always, start with a test.
+9.3:    Getting a domain name.
+9.4:    Manually provisioning a server to host our site
+9.4.1:  Choosing where to host our site.
+9.4.2:  Spinning up a server.
+9.4.3:  User accounts, SSH, and priviledges.
+9.4.4:  Installing Python 3.6
+9.4.5:  Configuring domains for staging and live.
+9.5:    Deploying our code manually
+9.5.1:  Creating a virtualenv on the server using requirements.txt
+9.5.2:  Using the FT to check that our deployment works.
+9.6:    Debugging deployment that doesn't seem to work at all.
+Box:    On debugging.
+9.7:    Hacking ALLOWED_HOSTS in settings.py
+9.8:    Creating the database with migrate.
+9.9:    Success! Our hack deployment works.
+Box:    Test-driving server configuration and deployment
+
+        (A). Tests take some of the uncertainty out of deployment.
+        For developers, server administration is always "fun", by which
+        I mean, a process full of uncertainty and surprises. A functional
+        test suite can take some of the uncertainty out of the process.
+
+        (B). Some typical pain points--networking, ports, static files and the database.
+
+        (C). Tests allow us to experiment and work incrementally.
+
+CHAPTER 10: GETTING TO A PRODUCTION-READY DEPLOYMENT
+
+10.1:   What we need to do.
+10.2:   Switching to Nginx
+10.2.1: Installation.
+10.2.2: The FT now fails, but show Nginx is running.
+10.2.3: Simple Nginx configuration.
+BOX:    Tips on debugging Nginx
+10.3:   Switching to Gunicorn
+10.4:   Getting Nginx to serve static files.
+10.5:   Switching to using Unix sockets.
+10.6:   Using environmental variables to adjust settings for production.
+10.7:   Essential Googling the error message.
+10.7.1: Fixing ALLOWED_HOSTS with Nginx: passing on the Host header.
+10.8:   Using a .env file to store our environmental variables.
+10.8.1: Generating a secure SECRET_KEY
+10.9:   Using Systemmd to make sure Gunicorn starts on boot.
+Box:    More debugging tips and commands.
+10.9.1: Saving our changes: Adding Gunicorn to our requirements.txt
+10.10:  Thinking about automating.
+10.10.1:         Saving templates to our provisioning config files.
+10.11:  Saving our progress.
+Box:    Production-readiness for server deployments
+
+        (A). Don't use Django dev server in production.
+        (B). Don't use Django to serve your static files.
+        (C). Check your settings.py for dev-only settings.
+        (D). Security.
+
+Box:    General server debugging tips.
+
+CHAPTER 11: AUTOMATING DEPLOYMENT WITH FABRIC
+
+11.1:   Breakdown of a Fabric script for our deployment.
+11.1.1: Pulling down our source code with Git.
+11.1.2: Updating the virtualenv.
+11.1.3: Creating a new .env file if necessary.
+11.1.4: Updating static files.
+11.1.5: Migrating the database if necessary.
+11.2:   Trying it out.
+Box:    Fabric configuration.
+11.2.1: Deploying to live.
+11.3:   Provisioning: Nginx and Gunicorn config using sed.
+11.4:   Git tag the release.
+11.5:   Further reading.
+11.5.1: Automating provisioning with Ansible.
+Box:    Automated Deployments
+
+        (A). Fabric
+
+        (B). Idempotency
+
+        (C). Keep config files under source control.
+
+        (D). Automatic provisioning
+
+        (E). Configuration management tools.
+
+CHAPTER 12: SPLITTING OUR TESTS INTO MULTIPLE FILES, AND A GENERIC WAIT HANDLER
+
+12.1:   Start on a validation FT: prevening blank items.
+12.1.1: Skipping a test.
+Box:    Don't forget the "refactor" in red/green/refactor.
+12.1.2: Splitting functional tests out into many files.
+12.1.3: Running a single test file.
+12.2:   A new functional test tool: a generic explicit wait helper.
+Box:    Lambda functions
+12.3:   Finishing off the FT.
+Box:    Helper methods in FTs.
+12.4:   Refactoring unit tests into several files.
+Box:    Tips on organizing tests and refactoring
+
+        (A). Use a tests folder.
+        (B). Don't forget the "refactor" in red/green/refactor.
+        (C). Don't refactor against failing unit tests.
+        (D). Try a generic wait_for helper.
+
+CHAPTER 13: VALIDATION AT THE DATABASE LAYER
+
+13.1:   Model-layer validation
+13.1.1: The self.assertRaises context manager.
+13.1.2: A Django quirk: model save doesn't run validation.
+13.2:   Surfacing model validation errors in the view.
+13.2.1: Checking that invalid input isn't saved to the database.
+13.3:   Django pattern: processing POST requests in the same views as renders the form.
+13.3.1: Refactor: transferring the new_item functionality into view_list
+13.3.2: Enforcing model validation in view_list.
+13.4:   Refactor: Removing hardcoded URLs.
+13.4.1: The {% url %} template tag.
+13.4.2: Using get_absolute_url for redirects.
+Box:    On Database-layer validation
+
+        (A). Validation at the database layer is the ultimate guarantee of data integrity.
+        (B). But it comes at the expense of flexibility.
+        (C). And it's not designed for user-friendliness.
+
+CHAPTER 14: A SIMPLE FORM
+
+14.1:   Moving validation logic into a form.
+14.1.1: Exploring the Forms API with a unit test.
+Box:    Development-driven tests: using unit tests for exploratory coding.
+14.1.2: Switching to Django ModelForm
+14.1.3: Testing and customizing form validation.
+14.2:   Using the form in our views.
+14.2.1: Using the form in a view with a GET request.
+14.2.2: A big find and replace.
+14.3:   Using the form in a view that takes POST requests.
+14.3.1: Adapting the unit tests for the new_list view.
+14.3.2: Using the form in the view.
+14.3.3: Using the form to display errors in the template.
+14.4:   Using the form in the other view.
+14.4.1: A helper method for several short tests.
+14.4.2: An unexpected benefit: free client-side validations from HTML5
+14.5:   A pat on the back.
+14.6:   But have we wasted a lot of time?
+14.7:   Using the form's own save method.
+Box:    Tips
+
+        (A). Thin views
+        (B). Each test should test one thing.
+
+CHAPTER 15: MORE ADVANCED FORMS
+
+15.1:   Another FT for duplicate items.
+15.1.1: Preventing duplicates at the model layer.
+Box:    An aside on when to test for developer stupidity.
+15.1.2: A little digression on Queryset ordering and string representation.
+15.1.3: Rewriting the old model test.
+15.1.4: Some integrity errors do show up on save.
+15.2:   Experimenting with duplicate item validation at the views layer.
+15.3:   A more complex form to handle uniqueness validation.
+15.4:   Using the existing list item form in the list view.
+15.5:   Wrapping up: What we've learned about testing Django.
+Box:    What to test in views
+
+CHAPTER 16: DIPPING OUR TOES, VERY TENTATIVELY, INTO JAVASCRIPT
+
+16.1:   Starting with a FT
+16.2:   Setting up a basic JavaScript test runner.
+16.3:   Using jQuery and the fixtures div.
+16.4:   Buidling a JavaScript unit test for our desired functionality.
+16.5:   Fixtures, execution order, and global state: key challenges of JS testing.
+16.5.1: console.log for debug printing.
+16.5.2: Using an initialize function for more control over execution time.
+16.6:   Colombo says: Onload boilerplate and namespacing.
+16.7:   JavaScript testing in the TDD cycle.
+16.8:   A few things that didn't make it.
+Box:    Javascript testing notes
+
+CHAPTER 17: DEPLOYING OUR NEW CODE
+
+17.1: Staging deploy.
+17.2: Live deploy.
+17.3: What to do if you see a database error.
+17.4: Wrap-up: git tag the new release.
+Box:  Deployment procedure review.
+
+PART III: MORE ADVANCED TOPICS IN TESTING
+
+CHAPTER 18: USER AUTHENTICATION, SPIKING AND DE-SPIKING
+
+18.1:   Passwordless Auth
+18.2:   Exploratory coding, aka "spiking"
+18.2.1: Starting a branch for the spike
+18.2.2: Frontend log in UI.
+18.2.3: Sending emails from Django.
+18.2.4: Another secret, another environment variable.
+18.2.5: Storing tokens in the database.
+18.2.6: Custom authentication models.
+18.2.7: Finishing the custom Django auth.
+Box:    Aside: Logging to stderr
+18.3:   De-spiking
+18.3.1: Reverting our spiked code.
+18.4:   A minimal custom user model.
+18.4.1: Tests as documentation.
+18.5:   A token model to link emails with a unique ID.
+Box:    Exploratory Coding, Spiking and De-Spiking
+
+CHAPTER 19: USING MOCKS TO TEST EXTERNAL DEPENDENCIES OR REDUCE DUPLICATION
+
+19.1:   Before we start: getting the basic plumbing in.
+19.2:   Mocking manually, aka Monkeypatching.
+19.3:   The Python mock library
+19.3.1: Using unittest.patch
+19.3.2: Getting the FT a little further along.
+19.3.3: Testing the Django messages framework.
+Box:    Mocks can leave you tightly coupled to the implementation.
+19.3.4: Adding messages to our HTML
+19.3.5: Starting with the Login URL.
+19.3.6: Checking that we send the user a link with a token.
+19.4:   De-spiking our custom authentication backend.
+19.4.1: 1 if = 1 more test.
+19.4.2: The get_user method
+19.4.3: Using our auth backend in the login view
+19.5:   An alternative reason to use mocks: reducing duplication
+Box:    On mock-call args.
+19.5.1: Using mock.return_value
+19.5.2: Patching at the class level.
+Box:    Avoid mock's magic assert_called...methods?
+19.6:   The momet of truth: with the FT pass?
+19.7:   It works in theory! Does it work in practice?
+19.7.1: Using our new environmental variable, and saving it to .env.
+Box:    Using a local .env file for development.
+19.8:   Finishing off our FT, testing logout
+Box:    On mocking in Python
+
+        (A). Mocking and external dependencies
+        (B). Monkeypatching
+        (C). The Mock library
+        (D). The patch decorator
+
+CHAPTER 20: TEST FIXTURES AND A DECORATOR FOR EXPLICIT WAITS
+
+20.1:   Skipping the login process by pre-creating a session
+Box:    Django sessions: how a user's cookies tell the server she is authenticated
+20.1.1: Checking that it works
+Box:    JSON test fixtures considered harmful
+20.2:   Our final explicit wait helper: a wait decorator
+Box:    Lessons learned
+
+        (A). Decorators are nice
+        (B). De-duplicate your FTs, with caution
+        (C). Test fixtures
+        (D). Aoivd JSON fixtures
+
+CHAPTER 21: SERVER-SIDE DEBUGGING
+
+21.1:   The proof is in the pudding: using staging to catch final bugs
+21.2:   Inspecting logs on the server
+21.3:   Another environment variable
+21.4:   Adapting our FT to be able to test real emails via POP3
+21.5:   Managing the test database on staging
+21.5.1: A Django management command to create sessions.
+21.5.2: Getting the FT to run the management command on the server.
+21.5.3: Using Fabric directly from Python.
+21.5.4: Recap: Creating sessions locally versus staging
+Box:    Warning: Be areful not to run test code against the live server.
+21.6:   Updating our deploy script.
+21.7:   Wrap-up
+Box:    Lessons learned catching bugs in staging
+
+        (A). Fixtures also have to work remotely.
+        (B). Be very careful when resetting data on your servers
+        (C). Logging is critical to debugging issues on the server.
+
+CHAPTER 22: FINISHING "MY LISTS" OUTSIDE-IN TDD
+
+22.1:   The alternative: "Inside-Out"
+22.2:   Why prefer "Outside-in"?
+22.3:   The FT for "My Lists"
+22.4:   The outside layer: presentation and templates
+22.5:   Moving down one layer to view functions (the controller)
+22.6:   Another pass, outside-in
+22.6.1: A quick restructure of the template inheritance hierarchy
+22.6.2: Designing our API using the template.
+22.6.3: Moving down to the next layer: what the view passes to the template.
+22.7:   The next "requirement" from the views layer: new lists should record owner.
+22.7.1: A decision point: whether to proceed to the next layer with a a failing test.
+22.8:   Moving down to the model layer.
+22.8.1: Final step: feeding through the .name API from the template.
+Box:    The @property decorator in Python.
+Box:    Outside-in TDD
+
+        (A). Outside-in TDD
+        (B). Programming by wishful thinking.
+        (C). The pitfalls of outside-in.
+
+CHAPTER 23: TEST ISOLATION, AND "LISTENING TO YOUR TESTS"
+23.1:   Revisiting our decision point: the views layer depends on unwritten models code.
+23.2:   A first attempt at using mocks for isolation
+23.2.1: Using mock side_effects to check the sequence of events.
+23.3:   Listen to your tests: ugly tests signal a need to refactor.
+23.4:   Rewriting our tests for the view to fully isolated.
+23.4.1: Keep the old integrated test suite around as a sanity check.
+23.4.2: A new test suite with full isolation.
+23.4.3: Thinking in terms of collaborators.
+23.5:   Moving down to the forms layer.
+23.5.1: Keep listening to your tests: removing ORM code from our application.
+Box:    Hiding ORM code behind helper methods.
+23.6:   Finally, moving down to the models layer.
+23.7:   The moment of truth (and the risks of mocking).
+23.8:   Thinking of interactions between layers as "Contracts"
+23.8.1: Identifying implicit contracts.
+23.8.2: Fixing the oversight.
+23.9:   One more test.
+23.10:  Tidy up: What to keep from our integrated test suite.
+23.10.1:     Removing redundant code at the forms layer.
+23.10.2:     Removing the old implementation of the view.
+23.10.3:     Removing redundant code at the forms layer.
+23.11:  Conclusions: when to write isolated versus integrated tests.
+23.11.1:     Let complexity be your guide.
+23.12.2:     Should you do both?
+23.12.3:     Onwards!
+Box:    On the pros and cons of different types of tests, and decoupling ORM code.
+
+        (A). Functional tests
+        (B). Integrated tests (reliant on, for example, the ORM or the Django Test Client)
+        (C). Isolated ("mocky") tests
+        (D). Decoupling our application from ORM code.
+
+CHAPTER 24: CONTINUOUS INTEGRATION (CI)
+
+24.1:   Installing Jenkins
+24.2:   Configuring Jenkins
+24.2.1: Initial Unlock
+24.2.2: Suggesting plugins for now.
+24.2.3: Configuring the Admin user
+24.2.4: Adding plugins
+24.2.5: Telling Jenkins where to find Python 3 and Xvfb
+24.2.6: Finishing off with HTTPS
+24.3:   Setting up our project.
+24.4:   First build!
+24.5:   Setting up a virtual display so the FTs can run headless.
+24.6:   Taking screenshots
+24.7:   If in doubt, try bumping the timeout!
+24.8:   Running our QUnit JavaScript tests in Jenkins with PhantomJS
+24.8.1: Installing node
+24.8.2: Adding the build steps to Jenkins
+24.9:   More things to do with a CI server
+Box:    Tips on CI and Selenium best practices
+
+        (A). Set up CI as soon as possible for your project.
+        (B). Set up screenshots and HTML dumps for failures.
+        (C). Be prepared to bump your timeouts.
+        (D). Look into hooking up CI and staging.
+
+CHAPTER 25: THE TOKEN SOCIAL BIT, THE PAGE PATTERN, AND AN EXCERCISE FOR THE READER
+
+25.1: An FT with multiple users and addCleanup
+25.2: The page pattern
+25.3: Extend the FT to a second user, and the "My Lists" page.
+25.4: An exercise for the reader.
+Box:  The page pattern, and the real exercise for the reader
+
+      (A). Apply DRY to your functional tests.
+      (B). The Page pattern
+      (C). An exercise for the reader.
+
+CHAPTER 26: FAST TESTS, SLOW TESTS, AND HOT LAVA
+
+Box: Terminology: different types of test
+
+     (A). Isolated tests ("pure" unit tests)
+     (B). Integration tests
+     (C). System tests
+     (D). Functional tests and acceptance tests.
+
+26.1:   Thesis: Unit tests are superfast and good besides that.
+26.1.1: Faster tests mean faster development.
+26.1.2: The holy flow state.
+26.1.3: Slow tests don't get run as often which causes bad code.
+26.1.4: We're fine for now, but integrated tests get slower over time.
+26.1.5: Don't take it from me.
+26.1.6: And unit tests drive good design
+26.2:   The problems with "pure" unit tests.
+26.2.1: Isolated tests can be harder to read and write.
+26.2.2: Isoltated tests don't automatically test integration.
+26.2.3: Unit tests seldom catch unexpected bugs.
+26.2.4: Mocky tests can become closely tied to implementation.
+26.2.5: But all of these problems can be overcome.
+26.3:   Synthesis: What do we want for our tests, anyway?
+26.3.1: Correctness
+26.3.2: Clean, maintainable code.
+26.3.3: Productive workflow.
+26.3.4: Evalute your tests against the benefits you want from them.
+26.4:   Architectural Solutions
+26.4.1: Ports and adapters/hexagonal/clean architecture
+26.4.2: Functional core, imperative shell.
+26.5:   Conclusion
+26.5.1: Further Reading
+Box:    On getting the balance right between different types of test.
+
+        (A). Start out by being pragmatic
+        (B). Focus on what you want from your tests.
+        (C). Architecture matters.
+
+26.5.2: Obey the testing goat!
+26.6:   Testing is hard
+26.6.1: Keep your CI builds green.
+26.6.2: Take pride in your tests, as you do in your code.
+26.7:   Remember to tip the bar staff.
+26.8:   Don't be a stranger.
+
+APPENDIX A: PYTHONANYWHERE
+
+APPENDIX B: DJANGO CLASS-BASED VIEWS
+
+APPENDIX C: PROVISIONING WITH ANSIBLE
+
+APPENDIX D: TESTING DATABASE MIGRATIONS
+
+APPENDIX E: BEHAVIOUR-DRIVEN DEVELOPMENT (BDD)
+
+APPENDIX F: BUILDING A REST API: JSON, AJAX, AND MOCKING WITH JAVASCRIPT
+
+APPENDIX G: DJANGO-REST-FRAMEWORK
+
+APPENDIX H: CHEAT SHEET
+
+APPENDIX I: WHAT TO DO NEXT
+
+APPENDIX J: SOURCE CODE EXAMPLES
+
+
+
+        
+
+
+
+
+        
