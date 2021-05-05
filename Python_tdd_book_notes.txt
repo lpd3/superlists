@@ -909,13 +909,21 @@ C.      COMMIT 25: Hack FT runner to be able to test staging".
 
 D.      Found my old domain name: beethovenkawaski.com, administered through google domains.
 
-D.      Set up a server on Digital Ocean. It is a Linux server. Generated my own ssh key.
-        Attached to the server (the "droplet"). Attached the google domain to the server.
-        Successfully accessed the server via ssh from the terminal. Generated the account
-        elspeth (in addition to the admin account). Set up apex domains for superlists and
-        superlists-staging. ipv4 of droplet is 159.89.44.252
-        To log in from the shell, type ssh [account-name]@[server-ip-address]. Password
-        for elspeth is the same as my root password.
+E.      Set up an account on Digital Ocean.
+
+F.      Generated my own ssh key locally.
+
+G.      Created a server ("droplet") on Digital Ocean, attaching the ssh key. (ipv4 of droplet is 159.89.44.252)
+
+H.      Attached the google domain to the server.
+
+I.      Successfully accessed the server via ssh from the terminal.
+
+J.      Generated the account elspeth. Password can be found on LastPass under elspeth@159.89.44.252
+
+K.      Linked ssh key to elspeth and granted elspeth superuser status.
+
+L.      Erased auto-generated root domain and set up apex domains for superlists and superlists-staging. 
 
 E.      Installed Python3.6 and venv on server via the deadsnakes repository.
 
@@ -930,6 +938,125 @@ I.      Attempt to run the server failed because Django is not installed on the 
 J.      File requirements.txt created locally containing the text "django==1.11", and added it to git.
 
 K.      COMMIT 23: "Add requirements.txt for virtualenv"
+
+L.      git pushed from local, and git pulled from server.
+
+M.      Set up a virtualenv in the superlists-staging file.
+
+N.      Successfully installed Django on the server, by pip installing (-r) from the requirements.txt file.
+
+O.      Successfully launched the server for the first time.
+
+P.      Functional tests failed because the local bash could not find the website we requested.
+        In the code of the attempt, we defined the  STAGING_SERVER variable as our website. We
+        also used the --failfast option to manage.py test. This causes the tests to clean up
+        and close as soon as the first fail occurs.
+
+Q.      We have pointed Django to our website. We have been running Django on the local host,
+        and specified port 8000 in our project code. This causes no problems. But websites are typically run on port
+        80, and that is where the functional tests are looking, now that we specified an external website.
+
+R.      Functional tests run again, specifically pointing at port 8000 on the site. The tests fail again for
+        the exact same reason.
+
+S.      Attempted a BASH curl (from local bash) on the superlists-staging subdomain. Connection refused.
+
+T.      Attempted to reach the same site directly through Firefox. Connection could not be established.
+
+U.      Performed a BASH curl from the server (using localhost:8000). Success: the contents of the base
+        HTML template are printed to the screen.
+
+V.      It turns out that Django's development server is figured to listen in on //127.0.0.1:8000, the
+        development server. But we started an external server, at an address that Django is not monitoring.
+
+W.      We shut down the server and restart it, specifying the address 0.0.0.0:8000 (this will cause
+        Django to listen on all addresses). Server starts without a hitch.
+
+X.      From the server, curl localhost:8000 works just as before.
+
+Y.      curl from laptap is successful (YES!)
+
+Z.      Attempt to run functional tests fails. Firefox launches, but no page is loaded; not even an
+        error page. On server there is an error message that the HTTP_HOST header is invalid
+
+AA.     Added the address of my project to the ALLOWED_HOSTS variable of settings.
+
+AB.     COMMIT 23A. "Address of my project added to ALLOWED_HOSTS"
+
+AC.     Attempt to run Functional Tests had the same results.
+
+AD.     Actually, this error was very similar to the error the book predicted next, but not identical.
+        In the book, the server caught the error and displayed it. However, this was not the case
+        for my trial. Instead of adding the my site to the allowed host, I used the wildcard *, as
+        specified in the book.
+
+AE.     COMMIT 24: "hack ALLOWED_HOSTS to be *" Performed a push and pull.
+
+AF.     Exited and relaunched the server. Server launched as expected.
+
+AG.     curl from the server was successful.
+
+AH.     curl from the laptop was successful.
+
+AI.     Going through Firefox (superlists-staging.beethovenkawasaki.com:8000) was successful: the page
+        loaded and the appearance was as expected.
+
+AJ.     Functional tests fail because the table was not found.
+
+AK.     Performed migrate on the server, and restart the server.
+
+AL.     Functional tests passed.
+
+CHAPTER 10: GETTING TO A PRODUCTION-READY DEPLOYMENT
+
+A.      While it is great that our project works on a real-life webpage, it is not really ready
+        for prime time. There are several problems.
+        (1). Our to-list is presented on port 8000. But people doing everyday web work will be
+        automatically directed to port 80.
+        (2). The Django development server was not intended for real-life web use. It cannot
+        handle the demands and volume of real web-traffic. We will be using the Nginx web server
+        and the Gunicorn Python/WSGI server.
+        (3). While DEBUG=True is good for development, it is strongly advised to have this set
+        to False in production.
+        (4). ALLOWED_HOSTS is currently a hack. We want it to allow only the hosts we specify.
+        (5). We want our SECRET_KEY to be unique.
+        (6). We don't want to ssh in to our server to start the site. We need to write a Systemd
+             config file that allows for automatic boot/reboot of the server.
+
+B.      Installed nginx on server. nginx started with systemctl start nginx.
+
+C.      Went directly to the website (without the 8000 port). The nginx welcome page shows up.
+
+D.      Functional tests fail. The tests find the nginx welcome page, and not the expected
+        To-do list.
+
+E.      Created a config file on server /etc/nginx/available-sites/superlists-staging.beethovenkawasaki.com
+        
+F.      Created a symbolic link in sites-enabled to the site file in available-sites. Removed the default
+        file in sites-enabled. Restarted nginx and the server.
+
+G.      Functional tests passed.
+
+H.      Installed gunicorn on the server (it was already installed) Also upgraded pip.
+
+I.      We tell gunicorn how to access the WSGI server by using the function "application",
+        pointing to the superlists.wsgi file. This appears to run the site on the server.
+
+J.      Functional tests fail because the formatting information was not found. (the static files.)
+
+K.      While Django automatically serves up static files, gunicorn does not. We can use nginx for
+        that.
+
+L.      Used collectstatic to gather static files for the server.
+
+
+
+
+
+
+
+
+
 
 
 

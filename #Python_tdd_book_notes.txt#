@@ -990,7 +990,115 @@ AD.     Actually, this error was very similar to the error the book predicted ne
         for my trial. Instead of adding the my site to the allowed host, I used the wildcard *, as
         specified in the book.
 
-AE.     COMMIT 24: "hack ALLOWED_HOSTS to be *"
+AE.     COMMIT 24: "hack ALLOWED_HOSTS to be *" Performed a push and pull.
+
+AF.     Exited and relaunched the server. Server launched as expected.
+
+AG.     curl from the server was successful.
+
+AH.     curl from the laptop was successful.
+
+AI.     Going through Firefox (superlists-staging.beethovenkawasaki.com:8000) was successful: the page
+        loaded and the appearance was as expected.
+
+AJ.     Functional tests fail because the table was not found.
+
+AK.     Performed migrate on the server, and restart the server.
+
+AL.     Functional tests passed.
+
+CHAPTER 10: GETTING TO A PRODUCTION-READY DEPLOYMENT
+
+A.      While it is great that our project works on a real-life webpage, it is not really ready
+        for prime time. There are several problems.
+        (1). Our to-list is presented on port 8000. But people doing everyday web work will be
+        automatically directed to port 80.
+        (2). The Django development server was not intended for real-life web use. It cannot
+        handle the demands and volume of real web-traffic. We will be using the Nginx web server
+        and the Gunicorn Python/WSGI server.
+        (3). While DEBUG=True is good for development, it is strongly advised to have this set
+        to False in production.
+        (4). ALLOWED_HOSTS is currently a hack. We want it to allow only the hosts we specify.
+        (5). We want our SECRET_KEY to be unique.
+        (6). We don't want to ssh in to our server to start the site. We need to write a Systemd
+             config file that allows for automatic boot/reboot of the server.
+
+B.      Installed nginx on server. nginx started with systemctl start nginx.
+
+C.      Went directly to the website (without the 8000 port). The nginx welcome page shows up.
+
+D.      Functional tests fail. The tests find the nginx welcome page, and not the expected
+        To-do list.
+
+E.      Created a config file on server /etc/nginx/available-sites/superlists-staging.beethovenkawasaki.com
+        
+F.      Created a symbolic link in sites-enabled to the site file in available-sites. Removed the default
+        file in sites-enabled. Restarted nginx and the server.
+
+G.      Functional tests passed.
+
+H.      Installed gunicorn on the server (it was already installed) Also upgraded pip.
+
+I.      We tell gunicorn how to access the WSGI server by using the function "application",
+        pointing to the superlists.wsgi file. This appears to run the site on the server.
+
+J.      Functional tests fail because the formatting information was not found. (the static files.)
+
+K.      While Django automatically serves up static files, gunicorn does not. We can use nginx for
+        that.
+
+L.      Used collectstatic to gather static files for the server.
+
+M.      Altered the file /etc/nginx/sites-available/$SITENAME to include the location of the static files.
+
+        NOTE: To do this on emacs, we use TRAMP. Here is the way it is done.
+        1.    Use the key combination for opening a file, namely C-X C-F.
+        2.    Backspace until you are in the root directory.
+        3.    Enter /ssh:user@server|sudo:server:/desired/file/path
+        4.    The first time you do this, you are asked for the password.
+              After you enter it correctly, you will be presented with the option
+              to save this password. If you select y, you will never need
+              to enter the password again for this particular account.
+
+N.      Restarted nginx like this: sudo systemctil reload nginx
+O.      Moved to the /sites/superlists-staging.beethovenkawasaki.com folder and started gunicorn server like this:
+        ./virtualenv/bin/gunicorn superlists.wsgi:application
+
+P.      Ran the browser, and the site has the expected appearance.
+
+Q.      Functional tests passed.
+        NOTE: The new way of running functional tests is this:
+
+        STAGING_SERVER=staging-server-name.sitename.com python manage.py test functional_tests --failfast
+        The failfast option causes the testing to cease at the first failure.
+
+R.      We will eventually be going to a production server. We want to be able to use the staging server
+        and the functional server. They cannot both share the same port. We do not wish to arbitrarily assign
+        two different ports. Instead, we will use a unix socket.
+        We alter the sites-available file for our staging site so that the proxy_pass under the second
+        location entry reads as follows:
+        http://unix:/tmp/our-staging-site-name.com.socket;
+
+S.      We restart the Gunicorn server, telling it to listen in on the socket instead of the default port.
+
+T.      Functional tests pass.
+
+U.      To have a production-ready site, we need to make a few changes to our current setup. These are:
+        1. Get rid of the hack of the ALLOWED_HOSTS variable. The current wildcard entry is not secure.
+        We want it only to match the site that we plan to serve on.
+
+        2. The DEBUG mode is set to True. This was useful for the development and staging stages, but
+        is insecure for the production site. This needs to be changed.
+
+        3. The SECRET_KEY is used by Django. We do not want the server to have the same secret key as our
+        local code. We need to generate a new secret key.
+
+V.      We go to our local superlists/settings.py file and make these changes.
+
+
+
+
+
 
 
 
