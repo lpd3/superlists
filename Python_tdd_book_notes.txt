@@ -1049,6 +1049,60 @@ K.      While Django automatically serves up static files, gunicorn does not. We
 
 L.      Used collectstatic to gather static files for the server.
 
+M.      Altered the file /etc/nginx/sites-available/$SITENAME to include the location of the static files.
+
+        NOTE: To do this on emacs, we use TRAMP. Here is the way it is done.
+        1.    Use the key combination for opening a file, namely C-X C-F.
+        2.    Backspace until you are in the root directory.
+        3.    Enter /ssh:user@server|sudo:server:/desired/file/path
+        4.    The first time you do this, you are asked for the password.
+              After you enter it correctly, you will be presented with the option
+              to save this password. If you select y, you will never need
+              to enter the password again for this particular account.
+
+N.      Restarted nginx like this: sudo systemctil reload nginx
+O.      Moved to the /sites/superlists-staging.beethovenkawasaki.com folder and started gunicorn server like this:
+        ./virtualenv/bin/gunicorn superlists.wsgi:application
+
+P.      Ran the browser, and the site has the expected appearance.
+
+Q.      Functional tests passed.
+        NOTE: The new way of running functional tests is this:
+
+        STAGING_SERVER=staging-server-name.sitename.com python manage.py test functional_tests --failfast
+        The failfast option causes the testing to cease at the first failure.
+
+R.      We will eventually be going to a production server. We want to be able to use the staging server
+        and the functional server. They cannot both share the same port. We do not wish to arbitrarily assign
+        two different ports. Instead, we will use a unix socket.
+        We alter the sites-available file for our staging site so that the proxy_pass under the second
+        location entry reads as follows:
+        http://unix:/tmp/our-staging-site-name.com.socket;
+
+S.      We restart the Gunicorn server, telling it to listen in on the socket instead of the default port.
+
+T.      Functional tests pass.
+
+U.      To have a production-ready site, we need to make a few changes to our current setup. These are:
+        1. Get rid of the hack of the ALLOWED_HOSTS variable. The current wildcard entry is not secure.
+        We want it only to match the site that we plan to serve on.
+
+        2. The DEBUG mode is set to True. This was useful for the development and staging stages, but
+        is insecure for the production site. This needs to be changed.
+
+        3. The SECRET_KEY is used by Django. We do not want the server to have the same secret key as our
+        local code. We need to generate a new secret key.
+
+V.      We go to our local superlists/settings.py file and make these changes. We accomplish this by
+        branching and environment variables.
+
+W.      COMMIT 25: "Use env vars for prod settings DEBUG, ALLOWED_HOSTS, SECRET_KEY"
+
+Y.      Used export to temporarily set the variables DJANGO_DEBUG_FALSE DJANGO_SECRET_KEY
+
+Z.      Functional tests failed because "To-Do" was not found on the webpage. A look on the browser
+        shows a bad request 400.
+
 
 
 
