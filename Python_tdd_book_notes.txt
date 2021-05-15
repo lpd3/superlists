@@ -1401,6 +1401,14 @@ AV.     Functional tests pass.
 
 AW.     COMMIT #35: "Enforce model validation in list view."
 
+AY.     Next, we want to get rid of all of our hard-coded Urls.
+
+AZ.     We change the home template so that the block form action calls {% url 'new_list' %}
+
+BA.     Unit tests pass.
+
+BB.     We change the list template so that the block form action calls {% url 'view_list' list.id %}
+
 
 
 
