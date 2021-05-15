@@ -1240,9 +1240,85 @@ S.      We go back to the base file, and copy the wait_for_row_in_list_table to 
 T.      Functional tests fail because we have asked the error checker to check for an element called .has-error.
         This element does not exist yet.
 
+U.      COMMIT #31 "Added generic wait helper function."
 
+V.      Now it's time to break up our unit tests into separate files as well.
 
+W.      We make a new directory lists/tests. We create a new file lists/tests/__init__.py. We
+        move lists/tests.py to lists/tests/test_all.py. Then we git add lists/tests.
 
+X.      Unit tests pass.
+
+Y.      COMMIT #32: "Move unit tests into a folder with single file"
+
+Z.      We rename test_all.py to test_views.py. We copy this file to a file with the name test_models.py.
+
+AA.     We edit list_models.py so that it contains only the class ListAndItemModelsTest(TestCase).
+
+AB.     We edit list_views.py by removing only the ListAndItemModelsTest(TestCase).
+
+AC.     Unit tests pass.
+
+AD.     COMMIT #33: "Split out unit tests into two files."
+
+CHAPTER 13: VALIDATION AT THE DATABASE LAYER
+
+A.      We run the single functional validation test, and it fails the same way as before.
+        We have not created an element called .has-error.
+
+B.      We can do validation on the client side or the server side. Server side is safer,
+        so we will go with that. In the server side, we can do validation at the model
+        level or at the forms level. We are choosing the model level, because it is closer
+        to the level of the actual database.
+
+C.      To the top of the test_models.py file, we add a new import
+        from django.core.exceptions import ValidationError.
+        We add a new method to the sole class in test_models called
+        test_cannot_save_empty_list_items(self). This test creates a new list item that is blank,
+        and we use the Django assertRaises to check that trying to save the blank item
+        raises a ValidationError.
+
+D.      As expected, the unit tests fail because we have not set up a mechanism to throw a
+        ValidationError.
+
+E.      This is related to a Django quirk. The Django variable TextField defaults to blank=False.
+        Therefore, it should throw a ValidationError automatically when we try to save a blank
+        text to the database. However, our database, SQLite doesn't allow constraints on blank
+        cells. So Django silently lets this error pass. Running migrations won't help, because
+        Django knows that SQLite will not allow constraints on blank cells. However, a Django
+        function full_clean will run validations manually, and this may be the solution to our
+        problem. We add item.full_clean() at the bottom of the last block in our new method.
+
+F.      Unit tests pass. It worked.
+
+G.      We want an error message to appear to the user. We achieve this by adding some code to
+        the lists/templates/base.html file.
+
+H.      Next we add a new unit test to test_views.py called
+        test_validation_errors_are_sent_back_to_home_page_template(self). It generates a new list
+        with a blank item. It tests to make sure that the response code status is 200 (normal),
+        that the template used is the home template, and that the page contains the error
+        message we want.
+
+I.      We also notice that we've hard-coded the name of a URL into this code. We have a lot
+        of these floating around are tests, which means we are violating DRY. We will look into
+        this after we get everything working again.
+
+J.      The unit tests fail because the status code is 302 and not 200. This is a type of redirect response.
+        It is not what we want.
+
+K.      We changed the new_list function in views.py so that it uses the full_clean() function.
+
+L.      The unit tests fail, indicating that the attempt to enter a blank to-do entry raised
+        an error, and this has reached the template. This is what we want.
+
+M.      We go to the views, and place the item.full_clean() in a try block. If a ValidationError is caught,
+        it will simply pass. We also import the ValidationError.
+
+N.      Unit tests fail, because there is a redirect instead of a straight code 200, as before.
+
+O.      We change the return on the view from a redirect to a rendering of the request to the
+        home_html template.
 
 
 
