@@ -1380,6 +1380,26 @@ AL.     Unit tests fail. Our url regex is expecting the add_item view.
 
 AM.     We remove the url regex that references the add_item view.
 
+AN.     Unit tests pass.
+
+AO.     Functional tests fail at the same place.
+
+AP.     COMMIT #35: "Refactor list view to handle new item POSTS"
+
+AQ.     Now, we want to make sure that blank items cannot be added to an already started list.
+
+AR.     we write test_validation_errors_end_up_on_lists_page(self) to the ListViewTest.
+
+AS.     Unit tests fail because the view does not currently perform any validation. This
+        is doing a redirect instead of giving the 200 code.
+
+AT.     We revamp the view_list method so that it closely resembles the try block we wrote before.
+
+AU.     Unit tests pass.
+
+AV.     Functional tests pass.
+
+AW.     COMMIT #35: "Enforce model validation in list view."
 
 
 
