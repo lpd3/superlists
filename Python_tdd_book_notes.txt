@@ -1409,6 +1409,31 @@ BA.     Unit tests pass.
 
 BB.     We change the list template so that the block form action calls {% url 'view_list' list.id %}
 
+BC.     Unit tests pass.
+
+BD.     COMMIT #36: "Refactor hard-coded URLs out of templates"
+
+BE.     Now it's time to refactor views so that there is not duplicate code.
+
+BF.     We add another test method to test_models.py: test_get_absolute_url.
+
+BG.     Unit tests fail, because List has not atteribute 'get_absolute_url'.
+
+BH.     We go the models file. We add from django.core.urlresolvers import reverse.
+
+BI.     We write code that provides an absolute_url to the List object.
+
+BJ.     We go to views and change the final redirect of new_list to list_.
+
+BK.     Unit tests pass.
+
+BL.     We alter the view_list so that the redirect in the try block is to list_.
+
+BM.     Unit tests pass.
+
+BN.     Functional tests pass.
+
+BO.     COMMIT #37: "Use get_absolute_url on List model to DRY urls in views"
 
 
 
