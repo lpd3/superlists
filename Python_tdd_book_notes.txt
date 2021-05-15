@@ -1320,6 +1320,67 @@ N.      Unit tests fail, because there is a redirect instead of a straight code 
 O.      We change the return on the view from a redirect to a rendering of the request to the
         home_html template.
 
+P.      Unit tests fail because it can't find the error message on the web page.
+
+Q.      We change the except block in lists/views.py so that it posts the error with the wording we wish.
+
+R.      Unit tests fail for the same reason.
+
+S.      We alter lists/tests/test_views.py so that it prints out the html of the webpage that is rendered.
+        We do this as a debugging technique.
+
+T.      We find that Django is automatically escaping the apostrophe in the error message.
+
+U.      We add an from "djanto.utils.html import escape" to test_views.py. Then we wrap the desired error
+        message in an escape.
+
+V.      Unit tests pass.
+
+W.      We realize that, although we are getting the appropriate error message for an attempt to add a
+        blank item to the list, we haven't checked to make sure that the item is kept out of the database.
+
+X.      We add a new test to the unit tests: test_invalid_list_items_arent_saved(self). This tests to
+        make sure no item was added to the database if the empty item errror is raised.
+
+Y.      Unit tests fail because, as expected, the empty items are being saved to the database.
+
+Z.      We alter lists/views.py so that the try block also contains the save() function. The
+        except block now begins with a delete() function, to remove the newly added empty item.
+
+AA.     Unit tests pass.
+
+AB.     Functional tests fail, but more tests pass than before. Specifically, the functional tests
+        are failing because selenium cannot find an element called .has-error
+
+AC.     COMMIT #34: "Adjust new list view to do model validation"
+
+AD.     The next thing to do is to put all of our POST requests into the same file. This breaks with RESTful
+        programming. But it is in better alignment with standard Django procedure.
+
+AE.     We alther lists/templates/list.html so that the form will have a different target.
+
+AF.     Functional tests fail. We have broken the POST request system, so we have a failure in submitting
+        items and saving them, as well as the lack of .has-error.
+
+AG.     We move test_can_save_a_POST_request_to_an_existing_list to the ListViewTest class. We change the
+        post site to /lists/{correct_list.id}/. We also change the name of the test_redirects_to_list_view
+        to test_POST_redirects_to_list_view. We change the post site in the same way, and move it to
+        the ListViewTest class. We get rid of the class NewItemTest.
+
+AH.     Unit tests fail because there was a redirect instead of a standard code 200. In addition, the
+        items are not being saved to the list.
+
+AI.     We change the views so they can deal with two different kinds of requests.
+
+AJ.     Unit tests pass.
+
+AK.     Since we no longer need it, we delete the add_item view.
+
+AL.     Unit tests fail. Our url regex is expecting the add_item view.
+
+AM.     We remove the url regex that references the add_item view.
+
+
 
 
 
