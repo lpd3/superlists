@@ -1583,6 +1583,122 @@ BC.     This is serendipitous. We don't need our check for empty items. The brow
 
 BD.     Functional tests pass.
 
+BE.     COMMIT #41: "use form in all views, back to working state."
 
+BF.     The previous might have seemed like a big waste of time. We spent all the time creating an error message,
+        and getting the message to percolate up through the code to the user. However, this was never needed
+        in our current use case. We should not be worried. First of all, not all browsers could handle
+        HTML5 at the time of this writing, especially Safari. Second of all, we will want to expand our
+        validation soon in ways that HTML5 can't handle. We already have the machinery set up to do this.
+        Finally, even if the first two were not true, we must realize that going down blind alleys is
+        part of coding. It will happen now and then. We should expect them on occasion and not beat ourselves
+        up when we discover them.
 
+BG.     We need to clean up a little. As it stands now, the forms are not actually saving items to the database.
+        We write a test for this in test_forms.py
 
+BH.     Unit tests fail because we haven't specified which list the the form's save method should send the data to.
+
+BI.     We revise the test to create a new list, make a form with some fanciful text, assign the results
+        of form.save(for_list=list_), and run assertions that the new item appears first on the list,
+        that it's contents are what we entered, and that the list matches the list we created.
+
+BJ.     unit tests fail because the save() function did not recognize the argument 'for_list'
+
+BK.     In our forms.py.ItemForm, we create a custom save function.
+
+BL.     Unit tests pass.
+
+BM.     Time to refactor the views. We refactor new_list
+
+BN.     Unit tests pass.
+
+BO.     Refactor view_list
+
+BP.     Unit tests pass.
+
+BQ.     Functional tests pass.
+
+CHAPTER 15: MORE ADVANCED FORMS
+
+A.      Now we are going to add validation code to prevent duplicate items in the list.
+
+B.      We add a new test in our functional tests to address this.
+
+C.      As expected, the functional tests fail because we have not written error-handling code
+        to address this situation. We also are reminded that the first test in this file passed again.
+        We can run only method at a time when we do a test run by python manage.py test APP.FILE.CLASS.METHOD
+
+D.      We ran just the functional test that failed, and of course, it failed again.
+
+E.      We now want to write a new unit test in the test_models to make sure that duplicate items in the same
+        list raise an error.
+
+F.      And we write another unit test to make sure that duplicate items CAN be saved to DIFFERENT lists.
+
+G.      Of course, the unit tests fail because we have not added code to raise a ValidationError if there
+        is a duplicate list item. This is the wrong solution.
+
+H.      We go to our models, and adjust the definition of text: the models.TextField now includes the
+        keyword argument unique=True.
+
+I.      The unit tests fail, now because it won't allow us to save a duplicate item to a different list.
+        We have written a test against developer stupidity. In general, these should be avoided. We can
+        trust that we will not intentionally do anything stupid. However, we cannot trust that we will
+        not accidentally do something stupid. It is ok to write tests that check for accidental stupidity.
+
+J.      We go to models, and use the class Meta, as before, to make a constraint that a duplicate item
+        cannot be saved to the SAME list. We get rid of the stupid keyword argument, while we are at it.
+
+K.      Unit tests pass.
+
+L.      Now, in the book, there was an error at this point. The author said that this error might not appear.
+        It indeed did not appear for me. He continues as if the error did appear, and writes more tests.
+        We will do as the author did, and add tests. The problem that the author saw was that the uniqueness
+        criterion had altered the default ordering of entries in the lists. 
+
+M.      We add a test for list ordering in test_models.py
+
+N.      Now the unit tests fail. But the error message is opaque.
+
+O.      We write another unit test of the string representation. Normally we would not want to introduce
+        a new unit test while another is still failing. But if the unit tests are simple, and doing so
+        helps to resolve the problem you are seeing, than this is acceptable.
+
+P.      The string representation is not the text we entered, but the string representation of the
+        type of the object. We go to models.py and add a magic method overriding str.
+
+R.      The unit test for the string representation now passes. But the unit test for ordering
+        still fails, and we can see more clearly why. The query set for the list is not the
+        same thing as the list itself.
+
+S.      In models.py, we add the line ordering = ('id',) to the Meta class of the Item class.
+
+T.      This fixed the original error in the author's case, but the queryset != list error
+        remained, as it remains for me.
+
+U.      We change the order test so that it casts Item.objects.all() to a list.
+
+V.      Unit tests pass.
+
+W.      Now we greatly simplify our tests, while still testing for the same things.
+
+X.      Next, we split the test_models.py to two classes. One tests for Item, and the other
+        tests for List.
+
+Y.      Unit tests pass.
+
+Z.      When we run makemigrations at this point, we notice that Django wants to add our new
+        duplicate constraint directly to the database, instead of allowing it to remain in
+        higher level code.
+
+AA.     We change our duplicates test to do a .save instead of a .full_clean.
+
+AB.     And now we see that an error bubbles up from the database. It is a different
+        kind of error from the one we want to display.
+
+AC.     We revert to the .full_clean.
+
+AD.     Unit tests pass.
+
+AE.     COMMIT #42: "Implement duplicate item validation at model layer"
