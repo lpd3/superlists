@@ -1509,7 +1509,79 @@ AC.     Unit tests fail, because we have specified a context of 'form' which the
 AD.     We change the home_page return in our views so that it uses ItemForm, and gives it the
         name 'form'.
 
+AE.     Next, we add it to the base.html template.
 
+AF.     Unit tests pass.
+
+AG.     Functional tests fail miserably. By altering our base HTML, we got rid of variables names
+        that the functional tests rely on. We need to refactor so that these variables are no
+        longer used.
+
+AH.     COMMIT #39: "Use new form in home_page, simplify tests, NB breaks stuff"
+
+AI.     Now we begin our refactoring. We make a new helper method in our functional tests
+        get_item_input_box, and then we go to all places in our files where we have id_new_item
+        and replace it with the name of this function.
+
+AJ.     We search through our lists folder using grep to find all occurences of id_new_item.
+        We replace each occurence with id_text. Then we do the same for item_text and we
+        replace each occurence with 'text'.
+
+AK.     Unit tests pass.
+
+
+AL.     All four functional tests return errors. The tests are still looking for 'id_text'. After we
+        submit an item, the input box disappears from the web page. If there is a validation error,
+        we are not passing a form to the home.html template.
+
+AM.     COMMIT #40: "rename all item input ids and names. still broken"
+
+AN.     We go to lists/tests/test_views.py. We see first, that the test is really testing too many
+        things. So we are going to split out two assertions. And we need to add a new assertion:
+        that we are passing our form object to the template if there is a validation error.
+        We can also get rid of the hard-coded string of the error message and import the constant.
+
+AO.     Unit tests fail because test_for_invalid_input_passes_form_to_template cannot find a dictionary
+        key 'form'.
+
+AP.     We alter view.py.new_list. We have a variable called "form" which contains an ItemForm, with
+        data gleaned from a request.POST. If the form.is_valid(), we post the form to the site and
+        redirect to the list. If not, we redirect to home.
+
+AQ.     Unit tests fail because it could not find the error message on the page when an error situation
+        was created. This is because we are not yet using the form to display error messages.
+
+AR.     We change the base.html template so that errors are caught and displayed from the form.
+
+AS.     Unit tests fail because we have changed the way errors are displayed in all templates.
+        This means the error we manually feed to view_list is overwritten.
+
+AT.     We write a new unit test test_displays_item_form.
+
+AU.     Unit tests fail, as expected, and it's because there is no key found with the name "'form'"
+
+AV.     We fix this minimally by going to views.py, and before the final return, adding
+        form = ItemForm. And the render dictionary now has an additional entry: "form": form
+
+AW.     We want the form errors to also appear in the second view. We will split up the
+        test_validation_errors_end_up_on_lists_page into several tests. First we write a helper method
+        post_invalid_input, to avoid code duplication.
+
+AX.     Unit tests fail for only one reason: The error message is not appearing in the response.
+
+AY.     We rewrite the view.
+
+AZ.     Unit tests pass.
+
+BA.     Functional tests returned error on second test. The test was unable to find the element .has-error.
+
+BB.     The "problem" is that, with HTML5, Django automatically prevents invalid input. Therefore, a blank
+        item cannot be submitted. So the error that we intended never appears for the test to see.
+
+BC.     This is serendipitous. We don't need our check for empty items. The browser does it automatically.
+        We rewrite our functional tests to test that this is occurring at all the necessary points.
+
+BD.     Functional tests pass.
 
 
 
