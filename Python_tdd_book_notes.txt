@@ -1435,6 +1435,82 @@ BN.     Functional tests pass.
 
 BO.     COMMIT #37: "Use get_absolute_url on List model to DRY urls in views"
 
+CHAPTER 14: A SIMPLE FORM
+
+A.      The views are too complex. We need to move some of the logic into forms.
+
+B.      We create a new file lists/tests/test_forms.py. We write a class ItemFormTest
+        and it includes one method: test_form_renders_item_text_imput to test our form,
+        which does not exist yet. We use form.as_p which renders the form as HTML.
+
+C.      We create a rudimentary form file.
+
+D.      Unit tests fail because the form does not have the right structure.
+
+E.      We change the ItemFormTest to containing a single test
+        test_form_item_input_has_placeholder_and_css_classes.
+
+F.      Unit tests fail because the placeholder code is not found in the form.
+
+G.      We adjust the ItemForm so that it contains the placeholder.
+
+H.      Unit tests fail because the css code does not appear in the forms.
+
+I.      We add the class form.field.
+
+J.      Unit tests pass.
+
+K.      We want validation to work on the form version.
+
+L.      We introduce the attribute Meta, which allows us to convert a view into a form.
+
+M.      Unit test fails, with a similar error as before. But now, we've lost our
+        placeholder and css fields, and the field that should be 'item_text' is 'text'.
+
+O.      We add a widget to our Meta class, which specifies the placeholder and css class
+        information we need.
+
+P.      Unit tests pass.
+
+Q.      We wish to see if the vadiation works in the form. We add a new test
+        in test_forms test_form_validation_for_blank_items.
+
+R.      We get an error, because, fortunately, the site is not saving blank items to
+        the database.
+
+S.      Now the next step is to catch the condition before it raises the exception.
+        We add code to the new test which asserts that the form is invalid and
+        checks that the error text on the form is what we want.
+
+T.      Unit tests fail, as expected, because we have not told the form to supply the
+        error message.
+
+U.      We need to change our Meta variable, so that we get to use our own error message
+        instead of the default.
+
+V.      Unit tests pass.
+
+W.      But we want to make our error message a constant variable. We change the code to reflect that.
+
+X.      Unit tests pass.
+
+Y.      We change the test_forms file to make use of the new constant.
+
+Z.      Unit tests pass.
+
+AA.     COMMIT 38: "new form for list items"
+
+AB.     Now we will get our form to work with our views. We start by writing a new unit test to veriy
+        that we're using the right kind of form. test_home_page_uses_item_form is added to the HomePageTest
+        class.
+
+AC.     Unit tests fail, because we have specified a context of 'form' which the test cannot find.
+
+AD.     We change the home_page return in our views so that it uses ItemForm, and gives it the
+        name 'form'.
+
+
+
 
 
 
