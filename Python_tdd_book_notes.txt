@@ -1702,3 +1702,10 @@ AC.     We revert to the .full_clean.
 AD.     Unit tests pass.
 
 AE.     COMMIT #42: "Implement duplicate item validation at model layer"
+
+AF.     We want to put this form to work in our view. We go to test_views.py and add imports from
+        lists.forms of DUPLICATE_ITEM_ERROR and ExistingListItemForm. We remove the skip decorator
+        above test_duplicate_item_valudiation_errors_end_up_on_lists_page.
+        We replace the hard-coded error message of expected error with the DUPLICATE_ITEM_ERROR
+
+AG.     Unit tests fail because the integrity error is bubbling up from the database.
