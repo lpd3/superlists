@@ -1709,3 +1709,128 @@ AF.     We want to put this form to work in our view. We go to test_views.py and
         We replace the hard-coded error message of expected error with the DUPLICATE_ITEM_ERROR
 
 AG.     Unit tests fail because the integrity error is bubbling up from the database.
+
+AH.     We add test_displays_item_form to the ListViewTest of test_views. And we modify
+        test_for_invalid_input_passes_form_to_template to that these make use of the
+        the new forms.
+
+AI.     The unit tests fail because we have not yet adjusted the view to account for the form.
+
+AJ.     We adjust the views so they make use of ExistingListItemForm.
+
+AK.     Unit tests fail because we are the new custom save() method is missing the for_list
+        attribute. We don't need this in the ExistingListItemForm.
+
+AL.     We write a new unit test to to check the saving goes ok.
+
+AM.     And then we define a new save method for the ExistingListForm that inherits from the grandparent
+        method.
+
+AN.     Unit tests pass.
+
+AO.     Functional tests pass.
+
+AP.     COMMIT #43: "Brought forms up to views."
+
+CHAPTER 16: DIPPING OUR TOES, VERY TENTATIVELY, INTO JAVASCRIPT
+
+A.      We want our duplicate item errors to vanish as soon as the client starts
+        fixing the problem. To do this, we need to use some JavaScript.
+
+B.      We add a new functional test to the ItemValidationTest class.
+
+C.      Functional test fails as expected because we haven't written any code to remove the
+        error message once the user starts correcting herself.
+
+D.      Three strikes and a refactor. It is time to get rid of duplicate code. We have three
+        places where we are looking for an error element by CSS. We can move that to a
+        helper function. And we replace the boilerplate code at three points within the
+        class to calls to the helper function.
+
+E.      Functional tests fail, as expected, in the same way as before the refactor.
+
+F.      COMMIT #44: "First version of Functional Test for removing error message when user begins fixing problem."
+
+G.      Since we are going to be working with JavaScript, we will need a JavaScript testing framework. The author
+        decided to go with Qunit, as it is simple, and works somewhat like selenium. We have created a new directory
+        lists/static/tests. Into that directory, we placed the current versions of the Qunit css and js code.
+
+H.      In the same directory, we create a file tests.html. We write a up the file, which includes a smoke test.
+
+L.      We open the browser, and simply load the html file into the browser. The page displays a header that says
+        JavaScript tests. It states that the smoke test was run and passed.
+
+M.      To see a deliberate failure, we change the arguments of the smoke test and reload the page.
+        We see a message for a failing test, as expected.
+
+N.      We download the latest copy of Jquery and put it into the lists/static directory.
+
+O.      We write a new smoke test in tests.html. This tests that .has-error is visible, then makes
+        it invisible, and tests to see if it is invisible. The test relies on both jquery and qunit.
+
+P.      We refresh the browser and the test passes.
+
+Q.      To see how the fixtures work, we duplicate the test within the document, changing the name of
+        the second test slightly.
+
+R.      This time the test fails. Since we've hidden the .has-error class in the page, the assert
+        visible does not pass.
+
+S.      We need a clean-up function, and the qunit-fixture div does this. We move the form in there.
+
+T.      Both smoke tests pass.
+
+U.      We go back to having one test, and begin writing it to handle our particular case:
+        errors should be hidden on keypress.
+
+V.      The test fails as expected.
+
+W.      To tests.html, we add another script src: list.js, which will reside in the parent directory.
+
+X.      We create the file list.js in the parent directory and write the minimal js code to get the
+        test to pass. We just tell the .has-error element to hide.
+
+Y.      js Unit test passes as expected.
+
+Z.      Now, errors shouldn't be hidden if there is no keypress, so we create another js unit test
+        to test for this.
+
+AA.     js Unit tests fail as expected.
+
+AB.     We change our list.js file so that it only hides the error if a key press is detected.
+
+AC.     But js Unit tests fail the same way again.
+
+AD.     We decide to add some console logs to our testing and the js file to see why this is failing.
+
+AE.     Using Ctrl+Shift+I we can see the element inspection. It tells us that list.js is loaded first,
+        then QUnit tests file loads, then each test is run. The problem is that each test has been sandboxed,
+        so any input that was present for the first test will be gone by the time the second test is run.
+        We need to be able control the execution time better.
+
+AF.     We add an initialize variable to our js file that wraps the rest of our code. Then we call
+        initialize with each test.
+
+AG.     js unit tests pass.
+
+AH.     We remove the console logs from the js file and the tests.
+
+AI.     Now it's time to actually use this logic in for real. We add html and js code into lists/templates/base.html
+        the pulls in the JQuery and our script.
+
+AJ.     The Functional test that addresses this concern passes.
+
+AK.     COMMIT #45: "add jquery, qunit tests, list.js with keypress listeners"
+
+AL.     We decide that our initialize() function has a name that is too common, and could likely
+        cause collisions if other code is imported. We decide to set up a namespace in our js doc.
+        And we change our js unit tests accordingly.
+
+AM.     Although we have placed our js script on the template at the bottom of the body, we
+        shouldn't assume that this will always load last. We need to wrap it in the Jquery
+        onload function to make sure the whole page loads before the test is executed.
+
+AN.     The relevent functional test passes.
+
+AO.     COMMIT #45: "refactored the initialize() function so that it is part of a namespace in the
+        list.js file, and made the necessary changes in the tests.html and base.html documents.
