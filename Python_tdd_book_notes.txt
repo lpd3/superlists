@@ -2336,6 +2336,19 @@ CQ.     As expected, the unit tests fail, because last_login is not one of our f
 CR.     We go to accounts/models.py and fix the problem. We add a line that disconnects
         the updating of the last login.
 
+CS.     Unit tests pass.
+
+CT.     Functional tests pass.
+
+CU.     We start up the server. In the book, this produced an error. It did not for me.
+
+CV.     In the book, to deal with the error, they re-add the email configuration to settings.py
+
+CW.     And then they add the email password in the shell with export. I did both of these.
+        Either way, the server runs fine.
+
+CX.     COMMIT 48: "Custom passwordless auth backend + custom user model"
+
 
 
 
