@@ -26,7 +26,7 @@ class LoginTest(FunctionalTest):
         ))
 
         # She checks her email and finds a message
-        email = mail.outbox(0)
+        email = mail.outbox[0]
         self.assertIn(TEST_EMAIL, email.to)
         self.assertEqual(email.subject, SUBJECT)
 
@@ -36,7 +36,7 @@ class LoginTest(FunctionalTest):
         if not url_search:
             self.fail(f'Could not find url in email body:\n{email.body}')
         url = url_search.group(0)
-        self.assertIn(self.live_serve_url, url)
+        self.assertIn(self.live_server_url, url)
 
         # she clicks it
         self.browser.get(url)
