@@ -2365,6 +2365,53 @@ DD.     The entire test suite passes.
 
 DE.     COMMIT 49: Added valid logout to user auth; user auth complete.
 
+CHAPTER 20: TEXT FIXTURES AND A DECORATOR FOR EXPLICIT WAITS.
+
+A.      The next step in making our site is to allow users to actually save and interact with lists they've created. And for
+        this, we need another functional test. However, we do not need to have the test log a user in each time it is testing
+        something. This is very time consuming. We want to test only the things that need to be tested.
+
+B.      We can skip the login process by pre-creating a session. This is similar to the very common process of saving
+        cookies to avoid time-consuming replication of work. So we will add a functional test document called
+        test_my_lists.py. It contains the class MyListsTest with the method create_pre_authenticated_session.
+
+C.      To check that it works, we want to reuse some of the code we just wrote. We will write two functions
+        wait_to_be_logged_in and wait_to_be_logged_out. These will go in functional_tests/base.py so that
+        they can be used by all the functional test files.
+
+D.      We use these functions in test_login.py
+
+E.      We rerun the login functional test to make sure we haven't broken anything. Sure enough, it does.
+
+F.      We go to test_my_lists and create a new test method: test_logged_in_users_lists_are_saved_as_my_lists
+
+G.      New functional tests pass.
+
+H.      COMMIT 50: "test_my_lists: precreate sessions, move login checks into base"
+
+I.      Now we will create a decorator to handle wait tasks. We take our first stab at this in a new
+        function called wait in functional_tests/base.py. And we decorate our other waiting fucntions
+        with wait.
+
+J.      The functional test fails because our decorator function is not right. We are converting our
+        function to a new function. But the original function takes arguments, and our new function takes
+        none.
+
+K.      So we add *args and **kwargs to our modified function.
+
+L.      Funtional test passes.
+
+M.      We returned a new wait_for funtion. Very simple.
+
+CHAPTER 21: SERVER-SIDE DEBUGGING
+
+A.      Now we will see how things work on the staging server. We deploy to the staging server.
+
+B.      We go to the server, restart the daemon and gunicorn.
+
+C.      The functional tests, run against the staging server, crash and burn. 6 are errors and 1 failure.
+        The problem is that, for some reason, the tests are not able to login on the server.
+
 
 
 

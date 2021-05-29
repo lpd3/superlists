@@ -2349,6 +2349,27 @@ CW.     And then they add the email password in the shell with export. I did bot
 
 CX.     COMMIT 48: "Custom passwordless auth backend + custom user model"
 
+CY.     Next, we need to test the logout link. We add some extra narrative and test to our functional test.
+
+CZ.     Functional test fails because selenium is unable to locate an element with the name "email".
+        This is because the logout button does not yet work.
+
+DA.     We go to accounts/urls.py and add a logout url, making use of Django's logout facilities.
+
+DB.     And we go to lists/templates/base.html and change href for logout so that it references the
+        url we have created for this purpose.
+
+DC.     Functional test passes.
+
+DD.     The entire test suite passes.
+
+DE.     COMMIT 49: Added valid logout to user auth; user auth complete.
+
+CHAPTER 20: TEXT FIXTURES AND A DECORATOR FOR EXPLICIT WAITS.
+
+
+
+
 
 
 
