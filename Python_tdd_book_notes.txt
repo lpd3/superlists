@@ -2367,6 +2367,86 @@ DE.     COMMIT 49: Added valid logout to user auth; user auth complete.
 
 CHAPTER 20: TEXT FIXTURES AND A DECORATOR FOR EXPLICIT WAITS.
 
+A.      The next step in making our site is to allow users to actually save and interact with lists they've created. And for
+        this, we need another functional test. However, we do not need to have the test log a user in each time it is testing
+        something. This is very time consuming. We want to test only the things that need to be tested.
+
+B.      We can skip the login process by pre-creating a session. This is similar to the very common process of saving
+        cookies to avoid time-consuming replication of work. So we will add a functional test document called
+        test_my_lists.py. It contains the class MyListsTest with the method create_pre_authenticated_session.
+
+C.      To check that it works, we want to reuse some of the code we just wrote. We will write two functions
+        wait_to_be_logged_in and wait_to_be_logged_out. These will go in functional_tests/base.py so that
+        they can be used by all the functional test files.
+
+D.      We use these functions in test_login.py
+
+E.      We rerun the login functional test to make sure we haven't broken anything. Sure enough, it does.
+
+F.      We go to test_my_lists and create a new test method: test_logged_in_users_lists_are_saved_as_my_lists
+
+G.      New functional tests pass.
+
+H.      COMMIT 50: "test_my_lists: precreate sessions, move login checks into base"
+
+I.      Now we will create a decorator to handle wait tasks. We take our first stab at this in a new
+        function called wait in functional_tests/base.py. And we decorate our other waiting fucntions
+        with wait.
+
+J.      The functional test fails because our decorator function is not right. We are converting our
+        function to a new function. But the original function takes arguments, and our new function takes
+        none.
+
+K.      So we add *args and **kwargs to our modified function.
+
+L.      Funtional test passes.
+
+M.      We returned a new wait_for funtion. Very simple.
+
+CHAPTER 21: SERVER-SIDE DEBUGGING
+
+A.      Now we will see how things work on the staging server. We deploy to the staging server.
+
+B.      We go to the server, restart the daemon and gunicorn.
+
+C.      The functional tests, run against the staging server, crash and burn. 6 are errors and 1 failure.
+        The problem is that, for some reason, the tests are not able to login on the server.
+
+D.      We make sure that we have the right logging settings in the superlists/settings.py file.
+
+E.      We restart gunicorn, and rerun the functional tests against the server. We haven't changed
+        anything, so we get the same results.
+
+F.      Next, we inspect Django's server logs by entering this on the server shell:
+        sudo journalctl -f -u gunicorn-superlists-staging.DOMAIN-NAME.EXTENSION
+
+G.      It turns out that Gmail is refusing to send our emails. This is because we haven't told the server
+        what our password is.
+
+H.      We add our password to the server .env file. We restart everything and load up the server logs.
+
+I.      We run the functional tests again. Now they are failing. Unable to locate element: Log out
+        The test is apparently getting farther, but it can't check the email in the mail.outbox.
+        We need to change our functional test so that it is able to test real emails via POP3.
+
+J.      We make a slight change to setUp in functional_tests/base.py: the staging_server variable is
+        changed to self.staging_server.
+
+K.      Then we build a helper function that can retrieve real email from a real POP3 email server in
+        the test_login.py.
+
+NOTE:   It is not enough to use source [filename] to load the filenames into the local environment.
+        First, we must use the command set -o allexport. If we wish to turn off this feature,
+        we type set +o allexport.
+
+NOTE2:  When using the yahoo mail, the password you send should be an app password, not your
+        account password. Currently, this is stored in the .env file. To access this in the
+        yahoo account, go to your your account picture, click on account, and navigate to
+        security. Then navigate to app passwords.
+
+L.      The latest functional test addition passes.
+
+
 
 
 

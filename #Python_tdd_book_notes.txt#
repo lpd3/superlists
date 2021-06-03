@@ -2412,6 +2412,90 @@ B.      We go to the server, restart the daemon and gunicorn.
 C.      The functional tests, run against the staging server, crash and burn. 6 are errors and 1 failure.
         The problem is that, for some reason, the tests are not able to login on the server.
 
+D.      We make sure that we have the right logging settings in the superlists/settings.py file.
+
+E.      We restart gunicorn, and rerun the functional tests against the server. We haven't changed
+        anything, so we get the same results.
+
+F.      Next, we inspect Django's server logs by entering this on the server shell:
+        sudo journalctl -f -u gunicorn-superlists-staging.DOMAIN-NAME.EXTENSION
+
+G.      It turns out that Gmail is refusing to send our emails. This is because we haven't told the server
+        what our password is.
+
+H.      We add our password to the server .env file. We restart everything and load up the server logs.
+
+I.      We run the functional tests again. Now they are failing. Unable to locate element: Log out
+        The test is apparently getting farther, but it can't check the email in the mail.outbox.
+        We need to change our functional test so that it is able to test real emails via POP3.
+
+J.      We make a slight change to setUp in functional_tests/base.py: the staging_server variable is
+        changed to self.staging_server.
+
+K.      Then we build a helper function that can retrieve real email from a real POP3 email server in
+        the test_login.py.
+
+NOTE:   It is not enough to use source [filename] to load the filenames into the local environment.
+        First, we must use the command set -o allexport. If we wish to turn off this feature,
+        we type set +o allexport.
+
+NOTE2:  When using the yahoo mail, the password you send should be an app password, not your
+        account password. Currently, this is stored in the .env file. To access this in the
+        yahoo account, go to your your account picture, click on account, and navigate to
+        security. Then navigate to app passwords.
+
+L.      The latest functional test addition passes.
+
+M.      Running the full functional test suite was a disaster. In the book there was only one test that
+        did not work. But here, all of my tests are failing except the one I just created and tested.
+        Most of the tests are failing because the attribute get_item_input_box is not recognized.
+        This is inherited from FunctionalTest, which inherits from LiveServerTestCase.
+        The test files affected are
+            test_layout_and_styling
+            test_list_item_validation
+            test_simple_list_creation
+
+        The expected error was in the test_my_lists.MyListsTest: Unable to locate element Log out.
+        This is because our utility create_preauthenticated_session works only on the local database,
+        not against the server..
+        
+
+N.      We go into the Django management command to create sessions on the server. We create the directory
+        functional_tests/management/commands. And we create an __init__.py file in both the management
+        directory and the commands directory. In the commands directory we create a new file create_session.py
+        and fill it with the code necessary to run a Django command to create a session.  It contains a class
+        Command with two methods: add_arguments and handle. Outside of this is a function create_pre_authenticated_session.
+
+O.      An attempt to call the function create_session from the command line fails because we have not yet registered
+        the functional_tests app in settings.
+
+P.      We add functional_tests to settings.
+
+Q.      Again an attempt to call the function fails because the table accounts_user was not found. We need to migrate.
+
+R.      An attempt to migrate failed because some tables already exist.
+
+S.      We delete the db.sqlite3 file and run migrate again.
+
+T.      Migrated successfully.
+
+U.      Running the create_session file from the command line returned a code string, as expected.
+
+V.      We fix test_my_lists so that it runs the local function on the local server and runs the
+        management command when we're on the staging server.
+
+W.      And we tweak base.py so that it gathers more info.
+
+X.      We add the file functional_tests/server_tools.py which allows us to run Fabric code right from our app
+        without using the command line.
+
+Y.      First, we check to see that we didn't break anything. We run the test_my_lists test locally. It passes.
+
+Z.      COMMIT #51: "Working toward deployment on the staging server: adjusted test database management
+        and added a file for using Fabric."
+
+            
+
 
 
 
