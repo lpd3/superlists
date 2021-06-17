@@ -30,7 +30,8 @@ def wait_for_email(self, test_email, subject):
                 print('getting msg', i)
                 _, lines, __ = inbox.retr(i)
                 lines = [l.decode('utf8') for l in lines]
-                if f'Subject: {SUBJECT}' in lines:
+                print(lines)
+                if f'Subject: {subject}' in lines:
                     email_id = i
                     body = '\n'.join(lines)
                     return body
