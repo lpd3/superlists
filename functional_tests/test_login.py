@@ -4,9 +4,11 @@ import re
 import time
 from django.core import mail
 from selenium.webdriver.common.keys import Keys
+from dotenv import load_dotenv # allows you to read environment variables
 
 from .base import FunctionalTest
 
+load_dotenv()
 
 SUBJECT = 'Your login link for Superlists'
 

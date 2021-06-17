@@ -1,4 +1,4 @@
-﻿PREREQUISITES AND ASSUMPTIONS
+PREREQUISITES AND ASSUMPTIONS
 
 Assumptions:	
 1.	You know how to write code in Python 3
@@ -2446,6 +2446,55 @@ NOTE2:  When using the yahoo mail, the password you send should be an app passwo
 
 L.      The latest functional test addition passes.
 
+M.      Running the full functional test suite was a disaster. In the book there was only one test that
+        did not work. But here, all of my tests are failing except the one I just created and tested.
+        Most of the tests are failing because the attribute get_item_input_box is not recognized.
+        This is inherited from FunctionalTest, which inherits from LiveServerTestCase.
+        The test files affected are
+            test_layout_and_styling
+            test_list_item_validation
+            test_simple_list_creation
+
+        The expected error was in the test_my_lists.MyListsTest: Unable to locate element Log out.
+        This is because our utility create_preauthenticated_session works only on the local database,
+        not against the server..
+        
+
+N.      We go into the Django management command to create sessions on the server. We create the directory
+        functional_tests/management/commands. And we create an __init__.py file in both the management
+        directory and the commands directory. In the commands directory we create a new file create_session.py
+        and fill it with the code necessary to run a Django command to create a session.  It contains a class
+        Command with two methods: add_arguments and handle. Outside of this is a function create_pre_authenticated_session.
+
+O.      An attempt to call the function create_session from the command line fails because we have not yet registered
+        the functional_tests app in settings.
+
+P.      We add functional_tests to settings.
+
+Q.      Again an attempt to call the function fails because the table accounts_user was not found. We need to migrate.
+
+R.      An attempt to migrate failed because some tables already exist.
+
+S.      We delete the db.sqlite3 file and run migrate again.
+
+T.      Migrated successfully.
+
+U.      Running the create_session file from the command line returned a code string, as expected.
+
+V.      We fix test_my_lists so that it runs the local function on the local server and runs the
+        management command when we're on the staging server.
+
+W.      And we tweak base.py so that it gathers more info.
+
+X.      We add the file functional_tests/server_tools.py which allows us to run Fabric code right from our app
+        without using the command line.
+
+Y.      First, we check to see that we didn't break anything. We run the test_my_lists test locally. It passes.
+
+Z.      COMMIT #51: "Working toward deployment on the staging server: adjusted test database management
+        and added a file for using Fabric."
+
+            
 
 
 
