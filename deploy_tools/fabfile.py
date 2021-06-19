@@ -1,6 +1,7 @@
 import random
 from fabric.contrib.files import append, exists
 from fabric.api import cd, env, local, run
+from dotenv import load_dotenv
 
 
 REPO_URL = 'https://github.com/lpd3/superlists.git'
@@ -33,6 +34,7 @@ def _update_virtualenv():
 
 
 def _create_or_update_dotenv():
+    load_dotenv()
     append('.env', 'DJANGO_DEBUG_FALSE=y')
     append('.env', f'SITENAME={env.host}')
     current_contents = run('cat .env')
@@ -41,6 +43,7 @@ def _create_or_update_dotenv():
             'abcdefghijklmnopqrstuvwxyz0123456789', k=50
         ))
         append('.env', f'DJANGO_SECRET_KEY={new_secret}')
+        email_password = os.environ['EMAIL_PASSWORD']
 
 
 def _update_static_files():

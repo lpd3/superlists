@@ -4,9 +4,10 @@ from django.contrib.auth import (
     SESSION_KEY,
     get_user_model
 )
-User = get_user_model()
 from django.contrib.sessions.backends.db import SessionStore
 from django.core.management.base import BaseCommand
+
+User = get_user_model()
 
 
 def create_pre_authenticated_session(email):

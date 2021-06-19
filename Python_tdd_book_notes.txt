@@ -2445,7 +2445,95 @@ NOTE2:  When using the yahoo mail, the password you send should be an app passwo
         security. Then navigate to app passwords.
 
 L.      The latest functional test addition passes.
+.
+.
+.
+M.      I ran into an error that cause me a great deal of grief.
+        Lesson learned: if something is passing locally, but not passing
+        on the server, one way to solve the problem is to check the code
+        that is running on the server and make sure it is matching what
+        you have locally. Sometimes, you need to remember to add a file
+        you are working on to git.
 
+N.      Next we update our deployment fabfile so that it can automatically add the EMAIL_PASSWORD to the
+        .env file on the server.
+
+CHAPTER 22: FINISHING "MY LISTS": OUTSIDE-IN TDD
+
+A.      Now we are going to start working on OUTSIDE-IN TDD. This means to do work first on the outermost, most general,
+        user-facing components of the project. This is counter to what most of us do. We typically start with a small
+        part of the program that we wish to build for functionality. The problem with this approach is that we end up
+        writing code to provide data or returned values that we aren't completely sure will be needed by the application.
+        It also takes us away from the TDD approach.
+
+B.      We will now alter our functional test test_my_lists. We now know that our code to create a preauthenticated
+        session already works, so we are simply now going to check that there is a "My Lists" page.
+
+C.      We alter the test so that it creates a list for emily and adds two items to it. It then clicks on the
+        My Lists link, and tests that there is a list named by the first element on the list.
+
+D.      We have the test make a new list for Emily. We check to see that that list also appears under her list
+        of My lists. We then log out, and check to see if the link My lists is still there.
+
+E.      Now, these tests make use of a new helper method, add_list_item, which we have not yet created. We go
+        to functional_tests/base.py and create it now. We will also add it to test_list_item_validation.
+
+F.      When running the functional tests, the first error to pop up is that test_my_lists cannot find
+        the element My lists.
+
+G.      We make a minimal change to our base template to get this test to pass. (We make a dead link).
+
+H.      The next error is that the test_my_list cannot find the link to the site which contains the list.
+        This link is supposed to be named for the first item on the list. We haven't created any machinery for this.
+
+I.      We replace the placeholder # in the link space with a link to the url specified by the users's email.
+
+J.      This causes an error with our template, that there is not a valid view function for 'my_lists' specified
+        in the template.
+
+K.      We move down into the views to fix this problem.
+
+L.      First, we create a new class in test_views: MyListsTest. This contains a single method:
+        test_my_lists_url_renders_my_lists_template.
+
+M.      And, of course, this unit test fails, because no templates are currently being used for
+        "My list".
+
+N.      Altered urls.py
+
+O.      Unit tests: AttributeError: module 'list.views' has no attribute 'my_lists'.
+
+P.      Added function my_lists to views.py.
+
+Q.      Added template my_lists.html.
+
+R.      Unit tests pass.
+
+S.      Functional test_my_lists fails. selenium.common.exceptions.NoSuchElementException: Message: Unable to locate element:
+        Reticulate splines
+
+T.      Start from the outside in again.
+
+U.      Made room in base for our new element. In the base, also make My Lists page optional.
+
+V.      Go to my_lists.html, override list_form, and say it should be empty...
+
+W.      Add what we need to my_lists.html in the extra_content block.
+
+X.      Functional test_my_lists.test_logged_in_users_lists_are_saved_as_my_lists has the same error:
+        selenium.common.exceptions.NoSuchElementException: Message: Unable to locate element: Reticulate splines
+
+Y.      git add lists, git commit -m "url, placeholder view, and first-cut templates for my_lists"
+
+Z.      We next need the views layer to supply the template with the owner. First we write a new unit test:
+        in lists/tests/test_views.py, in MyListsTest, test_passes_correct_owner_to_template
+
+AA.     Unit test fails: KeyError: 'owner'
+
+AB.     Add the owner variable to my_lists in lists/views.py
+
+AC.     Unit test_my_lists_url_renders_my_lists_template in lists.tests.test_views.MyListsTest fails:
+        accounts.models.DoesNotExist: User matching query does not exist
 
 
 
