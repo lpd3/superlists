@@ -2535,12 +2535,264 @@ AB.     Add the owner variable to my_lists in lists/views.py
 AC.     Unit test_my_lists_url_renders_my_lists_template in lists.tests.test_views.MyListsTest fails:
         accounts.models.DoesNotExist: User matching query does not exist
 
+AD.     We go to this test and add a user for it as well.
 
+AE.     Functional tests pass.
 
+AF.     New functional test: test_list_owner_is_saved_if_user_is_authenticated in lists.tests.test_views.MyListsTest
 
+AG.     New test fails: AttributeError: 'List' object has no attribute 'owner'
 
+AH.     To fix this, we need to descend to the models layer. But do we really want to descend with a failing test?
+        With a big project, this approach could leave us with several layers of failing tests before we fix the issue.
+        And we can't be sure without the tests whether each layer is otherwise working properly. We have two choices.
+        We can go ahead and fix the lower layer and see if that fixes the test. Or we can use a mock to give us
+        a test which sees a passing condition on what we are trying to fix, but does not give us a pass on other errors.
+        For now, we will take the prior approach, and return to the second approach in the next chapter.
 
+AI.     git commit -am "new-list view tries to assign owner but cant"
+        git tag revisit_this_point_with_isolated_tests
 
+AJ.     A new functional test: test_lists_can_have_owners in lists.tests.test_models.ListModelTest
+
+AK.     A new failure in a new test: TypeError: 'owner' is an invalid keyword argument for this function
+
+AL.     We add a new functional test test_list_is_optional in lists.tests.test_models.ItemModelTest
+
+AM.     We change lists.models.List.get_absolute_url to define "owner".
+
+AN.     General failure on running unit tests: django.db.utils.OperationalError: no such column: lists_list.owner_id
+
+AO.     Make migrations.
+
+AP.     The book says there should be several errors here. But these is only one on my system.
+        FAIL: test_list_owner_is_saved_if_user_is_authenticated (lists.tests.test_views.MyListsTest)
+        AssertionError: None != <User: User object>
+
+AQ.     In views, changed new_list so that it first checks to see if the user is authenticated.
+
+AR.     Functional tests pass.
+
+AS.     Commit "lists can have owners, which are saved on creation."
+
+AT.     We add a test to test_models: test_list_name_is_first_item_text
+
+AU.     And we go to models and define name, decorated with property.
+
+AV.     Functional tests pass.
+
+CHAPTER 23: TEST ISOLATION, AND "LISTENING TO YOUR TESTS"
+
+A.      The decision we made earlier to descend into lower levels when we had a failing test at the current level
+        was a fraught one. It made sense here, because the project is simple. But in a larger project it is not
+        the right way. So we will rewind and try proceding with better test isolation.
+
+B.      git checkout -b more-isolation [we created a new branch here]
+        git reset --hard revisit_this_point_with_isolated_tests [resets the branch to the condition of the project
+            before we made our fraught decision.]
+
+C.      We retype test_list_owner_is_saved_if_user_is_authenticated in test_views.NewListTest and our new_list in views.
+
+D.      Two unit tests fail: AttributeError: 'List' object has no attribute 'owner'.
+
+E.      We alter the test_views file to mock out the List and ItemForm in views
+
+F.      Unit tests pass.
+
+G.      We fiddle with our mocking so that the mocked function checks to see that an owner is
+        assigned before the list is saved.
+
+H.      We purposely break our code to see the test fail.
+
+I.      unit FAIL: test_list_owner_is_saved_if_user_is_authenticated (lists.tests.test_views.NewListTest)
+        AssertionError: <MagicMock name='List().owner' id = 'some numbers'> != <User: User object>
+
+J.      We repair the code.
+
+K.      Unit tests pass.
+
+L.      The level of complication in this unit test is a bad code smell. It tells us that the template function has
+        too much responsibility. We need to delegate much of this to the forms.
+
+M.      We get rid of the mocked test.
+
+N.      We return the original NewListViewTest to its original state, decorate a skip for the
+        test_list_owner_is_saved_if_user_is_authenticated, and rename class
+        NewListViewIntegratedTest
+
+O.      Functional tests pass.
+
+P.      In views, create a new method new_list2 which does nothing.
+
+Q.      In the test_views, we create a new class NewListViewUnitTest, which is
+        decorated with a patch of lists.views.NewListForm. It contains two methods:
+        a setUp method which defines self.request and performs a post of a new list item.
+        Then there is test_passes_POST_data_to_NewListForm, which checks that the new_list2
+        object was called once with a POST.
+
+R.      ERROR: test_passes_POST_data_to_NewListForm (lists.tests.test_views.NewListViewUnitTest)
+        AttributeError: <module 'lists.views' from ...'/lists/views.py'> does not have the attribute
+        'NewListForm'
+
+S.      In views, we import NewListForm from forms.
+
+T.      In forms, we make a new class NewListForm which is a placeholder.
+
+U.      FAIL: test_passes_POST_data_to_NewListForm (lists.tests.test_views.NewListViewUnitTest)
+        AssertionError: Expected 'NewListForm' to be called once. Called 0 times.
+
+V.      Change new_list2 in views to create a NewListForm
+
+W.      Unit tests pass.
+
+X.      Add code to test_views.NewListViewUnitTest including new test method
+        test_saves_form_with_owner_if_form_valid.
+
+Y.      We fill out new_list2 in views so that it saves the form.
+
+Z.      Add another test method to NewListViewUnitTest in test_views:
+        test_redirects_to_form_returned_object_if_form_valid, which
+        is decorated with @patch('lists.views.redirect')
+
+AA.     Alter new_list2 in its definition of form, and have it return a redirect.
+
+AB.     Unit tests pass.
+
+AC.     Add a new unit test test_renders_home_template_with_form_if_form_invalid, decorated with
+        @patch('lists.views.render')
+
+AD.     FAIL: test_renders_home_template_with_form_if_form_invalid (lists.tests.test_views.NewListViewUnitTest)
+        AssertionError: <HttpResponseRedirect status_code=302, "te[114 chars]%E"> != <MagicMock name 'render()'
+        id='[numbers]'>
+
+AE.     Break the code to make sure our tests catch mistakes.
+
+AF.     But the unit tests all pass.
+
+AG.     Added new unit test test_does_not_save_if_form_invalid.
+
+AH.     FAIL: test_does_not_save_if_form_invalid (lists.tests.test_views.NewListViewUnitTest)
+        AssertionError: True is not false.
+
+AI.     Correct the view.
+
+AJ.     Unit tests pass.
+
+AK.     It is time to move down to the forms layer. We attempt to write another unit test, but this
+        test is no good. Too much. Code smell. So we will encapsulate the process of the logic of saving
+        a new list object.
+
+AL.     Add a class to test_forms NewListFormTest. This contains the unit test
+        test_save_creates_new_list_from_post_data_if_user_not_authenticated, decorated with
+        @patch('lists.forms.List.create_new')
+
+AM.     Add a test method test_save_creates_new_list_with_owner_if_user_authenticated,
+        and decorated.
+
+AN.     ERROR: test_save_creates_new_list_from_post_data_if_user_not_authenticated (lists.tests.test_forms.NewListFormTest)
+        AttributeError: <class 'lists.models.List'> does not have the attribute 'create_new'
+        ERROR: test_save_creates_new_list_with_owner_if_user_authenticated (lists.tests.test_forms.NewListFormTest)
+        AttributeError: <class 'lists.models.List'> does not have the attribute 'create_new'
+
+AO.     Added placeholder method create_new to models/List.
+
+AP.     ERROR: test_save_creates_new_list_from_post_data_if_user_not_authenticated (lists.tests.test_forms.NewListFormTest)
+        NameError: name 'NewListForm' is not defined
+        ERROR: test_save_creates_new_list_with_owner_if_user_authenticated (lists.tests.test_forms.NewListFormTest)
+        NameError: name 'NewListForm' is not defined
+
+AQ.     Added import of the placeholder NewListForm class from forms to test_forms
+
+AR.     ERROR: test_save_creates_new_list_from_post_data_if_user_not_authenticated (lists.tests.test_forms.NewListFormTest)
+        TypeError: NewListForm() takes no arguments
+        ERROR: test_save_creates_new_list_with_owner_if_user_authenticated (lists.tests.test_forms.NewListFormTest)
+        TypeError: NewListForm() takes no arguments
+
+AS.     Make the NewListForm inherit from ItemForm.
+
+AT.     Duplicate errors in same two tests:
+        TypeError: save() got an unexpected keyword argument 'owner'
+
+AU.     Set up a save function in NewItemForm, that branches depending on user authentication.
+
+AV.     Unit tests pass.
+
+AW.     Moving down to the models layer. We want to interract directly with the database, so we
+        do not mock here. in test_models.ListModelTest we add a new unit test
+        test_create_new_creates_list_and_first_item.
+
+AX.     ERROR: test_create_new_creates_list_and_first_item (lists.tests.test_models.ListModelTest)
+        TypeError: create_new() got an unexpected keyword argument 'first_item_text'
+
+AY.     Begin fleshing out models.List.create_new. Decorate it with @staticmethod. Define list_ and
+        create a new list.
+
+AZ.     new test_create_new_optionally_saves_owner in test_models
+
+BA.     new test_lists_can_have_owners.
+
+BB.     new test_list_owner_is_optional
+
+BC.     ERROR: test_create_new_optionally_saves_owner (lists.tests.test_models.ListModelTest)
+        TypeError: create_new() got an unexpected keyword argument 'owner'
+        ERROR: test_lists_can_have_owners (lists.tests.test_models.ListModelTest)
+        TypeError: 'owner' is an invalid keyword argument for this function
+
+BD.     Define owner in models.
+
+BE.     django.db.utils.OperationalError: no such column: lists_list.owner_id
+
+BF.     makemigrations.
+
+BG.     ValueError: Cannot assign "<SimpleLazyObject: <django.contrib.auth.models.AnonymousUser
+           object at 0x7f711cb946d0>>": "List.owner" must be a "User" instance.
+
+        ValueError: Cannot assign "<SimpleLazyObject: <django.contrib.auth.models.AnonymousUser
+           object at 0x7f711cb82400>>": "List.owner" must be a "User" instance.
+
+        ERROR: test_create_new_optionally_saves_owner (lists.tests.test_models.ListModelTest)
+        TypeError: create_new() got an unexpected keyword argument 'owner'
+
+BH.     Alter models.List.create_new so that it excepts an argument owner, with a default value
+        of None, and uses this.
+
+BI.     ValueError: Cannot assign "<SimpleLazyObject: <django.contrib.auth.models.AnonymousUser
+           object at 0x7f711cb946d0>>": "List.owner" must be a "User" instance.
+
+        ValueError: Cannot assign "<SimpleLazyObject: <django.contrib.auth.models.AnonymousUser
+           object at 0x7f711cb82400>>": "List.owner" must be a "User" instance.
+
+BJ.     Alter the if form.is_valid() branch of lists/views.new_list2
+
+BK.     We similarly alter the code in the new_list function.
+
+BL.     Unit tests pass.
+
+BK.     Alter the urls so that it supplies views.new_list2 on new.
+
+BL.     Remove the skip above the test_list_owner_is_saved_if_user_is_authenticated in
+        test_views.NewListViewIntegratedTest
+
+BM.     ERROR: test_can_save_a_POST_request (lists.tests.test_views.NewListViewIntegratedTest)
+        django.urls.exceptions.NoReverseMatch: Reverse for 'None' not found.
+               'None' is not a valid view function or pattern name.
+        TypeError: argument of type 'NoneType' is not iterable
+        ERROR: test_redirects_after_POST (lists.tests.test_views.NewListViewIntegratedTest)
+        (same two problems)
+
+BN.     We neglected part of the "contract" between components. We find the problem in
+        lists.tests.test_views.NewListViewUnitTest.test_redirects_to_form_returned_object_if_form_valid.
+        We are defining response as new_list2. We go back to our contract between the forms and the views, and
+        review what is needed. It needs four capabilities: 1. initialize our form by passing a POST request as
+        data. 2. It should have an is_valid() method that returns a boolean value. 3. It should have a .save
+        method that accepts request.user, and deals with the situation of either a logged-in user or not.
+        4. The .save method should return a new list object, which the view directs our user to. Only 3
+        has been tested explicitly. Nos. 1 and 2 are (fortunately) automatically tested for by Django.
+        But no. 4 was never tested.
+
+BO.     Add test_save_returns_new_list_object to test_forms.NewListFormTest
+
+BP.     Add test_create_returns_new_list_object to test_models.NewModelTest. This is set to fail always.
 
 
 
