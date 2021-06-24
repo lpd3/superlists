@@ -6,3 +6,4 @@ __pycache__
 /static
 .env
 .env
+*Python_tdd_book_notes.txt*

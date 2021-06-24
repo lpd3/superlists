@@ -2850,7 +2850,114 @@ CL.     All functional tests passed.
 
 CM.     git add .
         git commit "add list owners via forms. more isolated tests."
-        git checkout 
+        git checkout main
+        git checkout -b main-noforms-noisolation-bak # optional backup
+        git checkout main
+        git reset --hard more-isolation # reset main to our branch
+
+CHAPTER 24 CONTINUOUS INTEGRATION
+
+A.      The Functional Tests are taking a long time to run. As the project grows, they will continued to take
+        longer amounts of time. For this reason, you can establish a Continuous Integration server to
+        run most of the functional tests automatically, while you manually run only the ones you are
+        currently working on. Unit testing is fast, and so needs not to be dealt with in this manner.
+
+B.      The current standard CI server is Jenkins.
+
+C.      Installed Java on the server.
+
+D.      Installed Jenkins on the server.
+
+E.      Added the repository for deadsnakes to the server and did an update.
+
+F.      Installed firefox, python3.7-venv and paython3.7-dev xvfb on the server.
+
+G.      Installed and built fabric3 on the server.
+
+H.      Installed geckodriver on the server.
+
+I.      Allocated a swap file for Jenkins on the server.
+
+J.      Installed suggested plugins in Jenkins.
+
+K.      Set up a username and password for Jenkins
+
+L.      Installed Jenkins plugins ShiningPanda and Xvfb.
+
+M.      Configured Jenkins to find python3, xvfb
+
+N.      Set SSL certificate for my sites
+
+O.      Added HTTPS redirect to my sites.
+
+P.      Added my superlists project on Jenkins.
+
+Q.      Attempted a build. It failed because it was looking for a branch called "master"
+        but my main branch is called "main".
+
+R.      Changed the configuration of Jenkins to look for the "main" branch.
+
+S.      Build #2 failed because it can't load Selenium. (Well, it's not installed,
+        that would be why!)
+
+T.      We add a step to our build to install Selenium and Fabric with each build.
+
+U.      Build #3 failed with a series of messages. These boil down to the fact that
+        Selenium has nowhere to go with its tasks. It can't just open up a Firefox
+        session and run it. We need to find a way to make that happen.
+        There are two solutions: we can use
+        a headless browser, such as PhantomJS, or SlimerJS. These will speed up testing.
+        But there are problems. They can't mimic all the quirks and unexpected
+        happenings of a real browser. Also, to get these to work with Jenkins requires
+        some code writing. We will not use these now, but it should be noted that
+        these have a great place in TDD: testing locally before you go to staging.
+        Once you go to a staging, you should use a different tool.
+
+        We will instead go with a virtual display. This means that Firefox will really
+        fire up, believing that it is displaying something. The tool we will use to
+        accomplish this is th Xvfb, which we already installed.
+
+S.      We change the configuration of our project so that Xvfb starts up before
+        the build and is shut down afterwards.
+
+T.      We are now down to one Failed functional test. It is a different failure
+        than the text predicts, but the text also predicts that I might see a
+        different failure or none at all.
+
+        This is my error:
+
+        ERROR: functional_tests.test_login (unittest.loader._FailedTest)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: functional_tests.test_login
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/unittest/loader.py", line 436, in _find_test_path
+    module = self._get_module_from_name(name)
+  File "/usr/lib/python3.8/unittest/loader.py", line 377, in _get_module_from_name
+    __import__(name)
+  File "/var/lib/jenkins/workspace/Superlists/functional_tests/test_login.py", line 7, in <module>
+    from dotenv import load_dotenv # allows you to read environment variables
+ModuleNotFoundError: No module named 'dotenv'
+
+U.    It would be nice to look at the pages that are causing the errors. There is a way to do this.
+
+V.    We alter functional_tests.base.py so that it creates a directory for our screenshots if necessary.
+      Then we iterate through all open browser tabs and pages, and we write code to take screenshots
+      and dump the html to the directory.
+
+W.    Then we create two functions, take_screenshot and dump_html, both residing in the base Functional Test
+      definitition.
+
+X.    And we create another method _get_filename which generates a filename that includes the test that
+      failed and the time stamp.
+
+Y.    Deliberately broke one of the functional tests and tried out the screenshot/html dump locally. The files
+      were saved as expected.
+
+Z.    Repaired the test.
+
+AA.   echo "functional_tests/screendumps" >> .gitignore
+      git commit -am "add screenshot on failure to FT runner"
+      git push
 
 
 
